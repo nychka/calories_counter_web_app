@@ -32,22 +32,17 @@ class Header extends React.Component
     render(){
         return(
             <div>
-                <Navbar color="light" light expand="md">
-                    <NavbarBrand href="/" className="mr-auto">{ this.siteName }</NavbarBrand>
+                <Navbar color="light" light expand="md" className="">
+                    <NavbarBrand href="/">{ this.siteName }</NavbarBrand>
                     <NavbarToggler onClick={this.toggle} />
                     <Collapse isOpen={this.state.isOpen} navbar>
-                        <Nav className="ml-auto" navbar>
+                        <Nav className="" navbar>
+                            <NavItem>
+                                <NavLink className="btn btn-default" href="/products/new">New Product</NavLink>
+                            </NavItem>
                             <NavItem>
                                 <NavLink href="/products">Products</NavLink>
                             </NavItem>
-                            <UncontrolledDropdown nav inNavbar>
-                                <DropdownToggle nav caret>admin@example.com</DropdownToggle>
-                                <DropdownMenu right>
-                                    <DropdownItem>Profile</DropdownItem>
-                                    <DropdownItem divider />
-                                    <DropdownItem>Logout</DropdownItem>
-                                </DropdownMenu>
-                            </UncontrolledDropdown>
                         </Nav>
                     </Collapse>
                 </Navbar>
