@@ -54,10 +54,23 @@ class ProductNew extends React.Component{
                     <div className="input-group">
                         <div className="input-group-prepend">
                                 <span className="input-group-text">
-                                    <img alt='en flag' src="https://www.flaggenmeer.de/Media/Default/Thumbs/0008/0008672-flagge-ukraine.gif" width="30px" />
+                                    <img alt='ua flag' src="https://www.flaggenmeer.de/Media/Default/Thumbs/0008/0008672-flagge-ukraine.gif" width="30px" />
                                 </span>
                         </div>
-                        <Input type="input" pattern="[а-яйїьє]{3,}" name="lang[ua]" id="product_lang_ua" required  />
+                        <Input type="input" pattern="[а-яйіїьє]{3,}" name="lang[ua]" id="product_lang_ua" required  />
+
+                    </div>
+                </FormGroup>
+
+                <FormGroup row>
+                    <Label for="product_lang_ru">Ru</Label>
+                    <div className="input-group">
+                        <div className="input-group-prepend">
+                                <span className="input-group-text">
+                                    <img alt='ru flag' src="https://vignette.wikia.nocookie.net/deusex/images/c/cf/Flag_of_Russia_2.png/revision/latest?cb=20161106171639&path-prefix=ru" width="30px" />
+                                </span>
+                        </div>
+                        <Input type="input" name="lang[ru]" id="product_lang_ru"  />
 
                     </div>
                 </FormGroup>
@@ -77,10 +90,14 @@ class ProductNew extends React.Component{
                     <Input type="input" name="image" id="product_image" required  />
                 </FormGroup>
 
+
+                {
+                    process.env.REACT_APP_FEATURE_CATEGORY ?
                 <FormGroup row>
                     <Label for="product_category_id">Category</Label>
                     <Input type="number" name="category_id" id="product_category_id"  />
                 </FormGroup>
+                        : '' }
 
 
                 <FormGroup check row>
