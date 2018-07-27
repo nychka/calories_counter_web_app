@@ -44,7 +44,7 @@ class ProductNew extends React.Component{
                                     <img alt='en flag' src="https://cdn.countryflags.com/thumbs/united-states-of-america/flag-400.png" width="30px" />
                                 </span>
                         </div>
-                        <Input type="text" pattern="[a-z]{3,}" name='lang[en]' id='product_lang_en' required />
+                        <Input type="text" name='lang[en]' id='product_lang_en' />
 
                     </div>
                 </FormGroup>
@@ -57,7 +57,7 @@ class ProductNew extends React.Component{
                                     <img alt='ua flag' src="https://www.flaggenmeer.de/Media/Default/Thumbs/0008/0008672-flagge-ukraine.gif" width="30px" />
                                 </span>
                         </div>
-                        <Input type="input" pattern="[а-яйіїьє]{3,}" name="lang[ua]" id="product_lang_ua" required  />
+                        <Input type="input" name="lang[ua]" id="product_lang_ua" />
 
                     </div>
                 </FormGroup>
