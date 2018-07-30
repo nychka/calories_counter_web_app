@@ -1,5 +1,6 @@
 import React from 'react';
-import { Table } from 'reactstrap';
+import { Link } from 'react-router-dom';
+import { Table, Button } from 'reactstrap';
 
 class ProductList extends React.Component{
     render(){
@@ -15,6 +16,8 @@ class ProductList extends React.Component{
                             <th>Calories</th>
                             <th>Created</th>
                             <th>Show</th>
+                            <th>Edit</th>
+                            <th>Remove</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -28,8 +31,10 @@ class ProductList extends React.Component{
                         <td>{lang_en}</td>
                         <td>{calories}</td>
                         <td>{product.created_at}</td>
-                        <td><a href={'/products/'+product.id}>Show</a></td>
-                    </tr>)
+                        <td><Link to={{ pathname: `/products/'${product.id}`, state: { product: product } }}>Show</Link></td>
+                        <td><Link to={{ pathname: `/products/'${product.id}/edit`, state: { product: product } }}>Edit</Link></td>
+                        <td><Button onClick={this.props.removeHandler.bind(this, product)}>Remove</Button></td>
+                            </tr>)
                 }) }
                     </tbody>
                 </Table>

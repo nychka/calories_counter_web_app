@@ -39,13 +39,50 @@ class App extends Component {
         this.fetchProducts()
     }
 
-    componentWillUnmount(){
-        alert('will unmount!');
-    }
     addProductHandler = (product) => {
         let products = this.state.products;
         products.unshift(product);
+
         this.setState({products: products});
+    }
+
+    editProductHandler = (product) => {
+        let products = this.state.products;
+
+        products.map((item, i) => {
+            if(item.id === product.id){
+                products[i] = product;
+                return true;
+            }
+        });
+
+        this.setState({products: products});
+    }
+
+    removeProductHandler = product => {
+        let canRemove = window.confirm('Are you really want to delete this product?');
+        let url = `${this.state.api_host}/products/${product.id}`;
+        let products = this.state.products;
+        const self = this;
+
+        if(canRemove){
+            axios.delete(url)
+            .then((response) => {
+                products.map((item, i) => {
+                    if(item.id === product.id){
+                        products.splice(i, 1);
+                        self.setState({products: products});
+                        return false;
+                    }
+                });
+                console.log(response);
+            })
+            .catch((response) => {
+                console.log(response);
+            })
+        }else{
+            return false;
+        }
     }
 
   render() {
@@ -54,15 +91,19 @@ class App extends Component {
           <Header />
         <Switch>
             <Route path='/' exact component={Home} />
-          <Route path="/products/new" exact render={() => (
-              <ProductNew handler={this.addProductHandler}/>
-          )} />
+        <Route path="/products/new" exact render={() => (
+          <ProductNew handler={this.addProductHandler.bind(this)}/>
+        )} />
 
-          <Route path="/products" exact render={() => {
-              return <ProductList products={this.state.products}/>
-          }} />
+        <Route path="/products/:id/edit" exact render={() => (
+            <ProductNew handler={this.editProductHandler.bind(this)} products={this.state.products} />
+        )} />
 
-            <Route path="/products/:id" component={ProductShow} />
+        <Route path="/products" exact render={() => {
+          return <ProductList removeHandler={this.removeProductHandler.bind(this)} products={this.state.products}/>
+        }} />
+
+            <Route path="/products/:id" removeHandler={this.removeProductHandler.bind(this)} component={ProductShow} />
         </Switch>
 
       </div>
