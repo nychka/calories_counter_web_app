@@ -2,12 +2,28 @@ import React from 'react';
 import { withRouter } from 'react-router-dom';
 import { Button, Form, FormGroup, Label, Input } from 'reactstrap';
 import axios from 'axios';
+import ImagePicker from './ImagePicker';
 
 class ProductNew extends React.Component{
    state = {
        api_host: process.env.REACT_APP_API_HOST,
        product: { id: 0, lang: { en: '', ua: '', ru: ''}, image: '', nutrition: { calories: ''}},
-       editMode: false
+       editMode: false,
+       suggestions: []
+       // suggestions: [
+       //     {image: 'http://4.bp.blogspot.com/-PB1VYJjSCQE/UREBbiEkphI/AAAAAAAAARM/a1tawzVrOA0/s1600/banana.jpeg'},
+       //     {image: 'http://4.bp.blogspot.com/-PB1VYJjSCQE/UREBbiEkphI/AAAAAAAAARM/a1tawzVrOA0/s1600/banana.jpeg'},
+       //     {image: 'http://4.bp.blogspot.com/-PB1VYJjSCQE/UREBbiEkphI/AAAAAAAAARM/a1tawzVrOA0/s1600/banana.jpeg'},
+       //     {image: 'http://4.bp.blogspot.com/-PB1VYJjSCQE/UREBbiEkphI/AAAAAAAAARM/a1tawzVrOA0/s1600/banana.jpeg'},
+       //     {image: 'http://4.bp.blogspot.com/-PB1VYJjSCQE/UREBbiEkphI/AAAAAAAAARM/a1tawzVrOA0/s1600/banana.jpeg'}
+       // ]
+   }
+
+   pickImageHandler(e){
+       let imageUrl = e.target.src;
+       let product = this.state.product;
+       product.image = imageUrl;
+       this.setState({product: product});
    }
 
    componentDidMount(){
@@ -18,8 +34,25 @@ class ProductNew extends React.Component{
        }
    }
 
+   onBlurLangEn(e){
+       const self = this;
+
+       if(e.target.value.length < 2) return false;
+
+       axios
+           .get(`${this.state.api_host}/image_search/search?q=${e.target.value}`)
+           .then(response => {
+               self.setState({suggestions: response.data.value});
+               console.log(response)
+           })
+           .catch(response => {
+               console.error(response);
+           })
+   }
+
    changeLangEn(e){
        let product = this.state.product;
+
        product['lang']['en'] = e.target.value;
 
        this.setState({product: product})
@@ -98,7 +131,7 @@ class ProductNew extends React.Component{
                                     <img alt='en flag' src="https://cdn.countryflags.com/thumbs/united-states-of-america/flag-400.png" width="30px" />
                                 </span>
                         </div>
-                        <Input type="text" name='lang[en]' id='product_lang_en' onChange={this.changeLangEn.bind(this)} value={this.state.product.lang.en} />
+                        <Input type="text" name='lang[en]' id='product_lang_en' onBlur={this.onBlurLangEn.bind(this)} onChange={this.changeLangEn.bind(this)} value={this.state.product.lang.en} />
 
                     </div>
                 </FormGroup>
@@ -140,6 +173,10 @@ class ProductNew extends React.Component{
                 </FormGroup>
 
                 <FormGroup row>
+                    { this.state.suggestions && this.state.suggestions.length ?
+                        <ImagePicker pickImageHandler={this.pickImageHandler.bind(this)} suggestions={this.state.suggestions} />
+                        : ''
+                    }
                     <Label for="product_image">Image</Label>
                     <Input type="input" onChange={this.change.bind(this)} name="image" id="product_image" value={this.state.product.image} required  />
                 </FormGroup>
