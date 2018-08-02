@@ -13,6 +13,7 @@
     "react-paginate": "^5.2.3",
     "react-router-dom": "^4.3.1",
     "react-scripts": "1.1.4",
+    "react-timeago": "^4.1.9",
     "react-validate-form": "^1.0.6",
     "reactstrap": "^6.3.0"
   },

@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Table, Button } from 'reactstrap';
 import ReactPaginate from 'react-paginate';
+import TimeAgo from 'react-timeago'
 
 class ProductList extends React.Component{
 
@@ -32,7 +33,9 @@ class ProductList extends React.Component{
                         <td><img className="" height="50px" src={product.image} alt={product.image} /></td>
                         <td>{lang_en}</td>
                         <td>{calories}</td>
-                        <td>{product.created_at}</td>
+                        <td>
+                            <TimeAgo date={product.created_at} />
+                            </td>
                         <td><Link to={{ pathname: `/products/'${product.id}`, state: { product: product } }}>Show</Link></td>
                         <td><Link to={{ pathname: `/products/'${product.id}/edit`, state: { product: product } }}>Edit</Link></td>
                         <td><Button onClick={this.props.removeHandler.bind(this, product)}>Remove</Button></td>
