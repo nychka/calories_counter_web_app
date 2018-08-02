@@ -34,10 +34,26 @@ class ProductNew extends React.Component{
        }
    }
 
-   onBlurLangEn(e){
+   onBlur(e){
        const self = this;
 
        if(e.target.value.length < 2) return false;
+       const currentLang = e.target.getAttribute('data-lang');
+
+       const preparedParams = (() => {
+
+           let inputs = document.querySelectorAll('input[data-lang]');
+           let params = [];
+           for(let input of inputs){
+               if(input.value.length < 2){
+                   let lang = input.getAttribute('data-lang');
+                   if(currentLang !== lang) params.push(lang);
+               }
+           }
+           return params;
+       })();
+
+
 
        axios
            .get(`${this.state.api_host}/image_search/search?q=${e.target.value}`)
@@ -48,6 +64,29 @@ class ProductNew extends React.Component{
            .catch(response => {
                console.error(response);
            })
+
+       if(preparedParams.length){
+           let query = `from=${currentLang}&to=${preparedParams.join(',')}`;
+
+           axios
+               .get(`${this.state.api_host}/translates/translate?q=${e.target.value}&${query}`)
+               .then(response => {
+                   console.log(response);
+                   let translations = response.data[0]['translations'];
+                   let product = self.state.product;
+                   translations.map(item => {
+                       let lang = item.to;
+                       if(item.to == 'uk') lang = 'ua';
+
+                       product['lang'][lang] = item.text.toLowerCase();
+                   })
+                   self.setState({product: product})
+               })
+               .catch(response => {
+                   console.error(response);
+               })
+       }
+
    }
 
    changeLangEn(e){
@@ -131,7 +170,7 @@ class ProductNew extends React.Component{
                                     <img alt='en flag' src="https://cdn.countryflags.com/thumbs/united-states-of-america/flag-400.png" width="30px" />
                                 </span>
                         </div>
-                        <Input type="text" name='lang[en]' id='product_lang_en' onBlur={this.onBlurLangEn.bind(this)} onChange={this.changeLangEn.bind(this)} value={this.state.product.lang.en} />
+                        <Input type="text" name='lang[en]' data-lang='en' id='product_lang_en' onBlur={this.onBlur.bind(this)} onChange={this.changeLangEn.bind(this)} value={this.state.product.lang.en} />
 
                     </div>
                 </FormGroup>
@@ -144,7 +183,7 @@ class ProductNew extends React.Component{
                                     <img alt='ua flag' src="https://www.flaggenmeer.de/Media/Default/Thumbs/0008/0008672-flagge-ukraine.gif" width="30px" />
                                 </span>
                         </div>
-                        <Input type="input" name="lang[ua]" id="product_lang_ua" onChange={this.changeLangUa.bind(this)} value={this.state.product.lang.ua} />
+                        <Input type="input" name="lang[ua]" data-lang='ua' id="product_lang_ua" onBlur={this.onBlur.bind(this)} onChange={this.changeLangUa.bind(this)} value={this.state.product.lang.ua} />
 
                     </div>
                 </FormGroup>
@@ -157,7 +196,7 @@ class ProductNew extends React.Component{
                                     <img alt='ru flag' src="https://vignette.wikia.nocookie.net/deusex/images/c/cf/Flag_of_Russia_2.png/revision/latest?cb=20161106171639&path-prefix=ru" width="30px" />
                                 </span>
                         </div>
-                        <Input type="input" name="lang[ru]" id="product_lang_ru" onChange={this.changeLangRu.bind(this)} value={this.state.product.lang.ru}  />
+                        <Input type="input" name="lang[ru]" data-lang='ru' id="product_lang_ru" onBlur={this.onBlur.bind(this)} onChange={this.changeLangRu.bind(this)} value={this.state.product.lang.ru}  />
 
                     </div>
                 </FormGroup>
