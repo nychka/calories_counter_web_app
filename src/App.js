@@ -19,6 +19,11 @@ class App extends Component {
         ]
     }
 
+    pageHandler = e => {
+        this.state.currentPage = e.selected + 1;
+        this.fetchProducts();
+    }
+
     fetchProducts(){
         const self = this;
         axios({
@@ -28,7 +33,8 @@ class App extends Component {
         })
             .then(function (response) {
                 console.log(response);
-                self.setState({products: response.data});
+                self.setState({products: response.data.products});
+                self.setState({totalPages: response.data.meta.totalPages});
             })
             .catch(function (response) {
                 console.log(response);
@@ -100,7 +106,7 @@ class App extends Component {
         )} />
 
         <Route path="/products" exact render={() => {
-          return <ProductList removeHandler={this.removeProductHandler.bind(this)} products={this.state.products}/>
+          return <ProductList currentPage={this.state.currentPage} totalPages={this.state.totalPages} pageHandler={this.pageHandler.bind(this)} removeHandler={this.removeProductHandler.bind(this)} products={this.state.products}/>
         }} />
 
             <Route path="/products/:id" removeHandler={this.removeProductHandler.bind(this)} component={ProductShow} />

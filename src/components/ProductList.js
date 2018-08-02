@@ -1,8 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Table, Button } from 'reactstrap';
+import ReactPaginate from 'react-paginate';
 
 class ProductList extends React.Component{
+
     render(){
         return(
             <div className="container productList">
@@ -38,6 +40,24 @@ class ProductList extends React.Component{
                 }) }
                     </tbody>
                 </Table>
+                <ReactPaginate
+                    previousLabel={"previous"}
+                    nextLabel={"next"}
+                    breakLabel={<a href="">...</a>}
+                    breakClassName={"break-me"}
+                    pageCount={this.props.totalPages}
+                    onPageChange={this.props.pageHandler}
+                    containerClassName={"pagination justify-content-center"}
+                    subContainerClassName={"pages pagination"}
+                    activeClassName={"active"}
+                    pageClassName={'page-item'}
+                    pageLinkClassName={'page-link'}
+                    previousClassName={'page-item'}
+                    nextClassName={'page-item'}
+                    previousLinkClassName={'page-link'}
+                    nextLinkClassName={'page-link'}
+                />
+
             </div>
         )
     }
