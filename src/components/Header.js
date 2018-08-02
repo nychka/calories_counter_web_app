@@ -43,6 +43,9 @@ class Header extends React.Component
                             <NavItem>
                                 <NavLink href="/products">Products</NavLink>
                             </NavItem>
+                            <NavItem>
+                                <NavLink href="/categories">Categories</NavLink>
+                            </NavItem>
                         </Nav>
                     </Collapse>
                 </Navbar>

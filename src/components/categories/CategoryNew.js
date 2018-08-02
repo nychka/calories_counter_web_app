@@ -2,21 +2,14 @@ import React from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import { Button, Form, FormGroup, Label, Input } from 'reactstrap';
 import axios from 'axios';
-import ImagePicker from './ImagePicker';
+import ImagePicker from '../ImagePicker';
 
-class ProductNew extends React.Component{
+class CategoryNew extends React.Component{
    state = {
        api_host: process.env.REACT_APP_API_HOST,
-       product: { id: 0, lang: { en: '', ua: '', ru: ''}, image: '', nutrition: { calories: ''}},
+       product: { id: 0, lang: { en: '', ua: '', ru: ''}, image: ''},
        editMode: false,
        suggestions: []
-       // suggestions: [
-       //     {image: 'http://4.bp.blogspot.com/-PB1VYJjSCQE/UREBbiEkphI/AAAAAAAAARM/a1tawzVrOA0/s1600/banana.jpeg'},
-       //     {image: 'http://4.bp.blogspot.com/-PB1VYJjSCQE/UREBbiEkphI/AAAAAAAAARM/a1tawzVrOA0/s1600/banana.jpeg'},
-       //     {image: 'http://4.bp.blogspot.com/-PB1VYJjSCQE/UREBbiEkphI/AAAAAAAAARM/a1tawzVrOA0/s1600/banana.jpeg'},
-       //     {image: 'http://4.bp.blogspot.com/-PB1VYJjSCQE/UREBbiEkphI/AAAAAAAAARM/a1tawzVrOA0/s1600/banana.jpeg'},
-       //     {image: 'http://4.bp.blogspot.com/-PB1VYJjSCQE/UREBbiEkphI/AAAAAAAAARM/a1tawzVrOA0/s1600/banana.jpeg'}
-       // ]
    }
 
    pickImageHandler(e){
@@ -111,13 +104,6 @@ class ProductNew extends React.Component{
         this.setState({product: product});
     }
 
-    changeNutritionCalories(e){
-        let product = this.state.product;
-        product['nutrition']['calories'] = e.target.value;
-
-        this.setState({product: product});
-    }
-
     change(e){
        let product = this.state.product;
        product[e.target.name] = e.target.value;
@@ -133,7 +119,7 @@ class ProductNew extends React.Component{
 
         const handler = this.props.handler;
         const history = this.props.history;
-        let url = this.state.api_host + '/products';
+        let url = this.state.api_host + '/categories';
         url += this.state.editMode ? ('/' + this.state.product.id) : '';
         axios({
             method: method,
@@ -144,7 +130,7 @@ class ProductNew extends React.Component{
         .then(function (response) {
             console.log(response.data);
             handler.call(self, response.data);
-            let url = self.state.editMode ? '/products/' + self.state.product.id : '/products';
+            let url = '/categories';
             history.push({
                 pathname: url,
                 state: { product: self.state.product }
@@ -158,6 +144,7 @@ class ProductNew extends React.Component{
     render(){
         return(
             <div className="container">
+                <h1>{ this.state.editMode ? 'Edit' : 'New' }</h1>
             <Form onSubmit={this.submitHandler}>
                 {this.state.editMode ?
                 <input type="hidden" name="id" value={this.state.product.id} />
@@ -202,16 +189,6 @@ class ProductNew extends React.Component{
                 </FormGroup>
 
                 <FormGroup row>
-                    <Label for="product_calories">Calories</Label>
-                    <div className="input-group">
-                        <Input type="number" onChange={this.changeNutritionCalories.bind(this)} value={this.state.product.nutrition.calories} min="1" max="1000" step="1" name="nutrition[calories]" id="product_calories" required  />
-                        <div className="input-group-append">
-                            <span className="input-group-text">100 gram</span>
-                        </div>
-                    </div>
-                </FormGroup>
-
-                <FormGroup row>
                     { this.state.suggestions && this.state.suggestions.length ?
                         <ImagePicker pickImageHandler={this.pickImageHandler.bind(this)} suggestions={this.state.suggestions} />
                         : ''
@@ -221,17 +198,8 @@ class ProductNew extends React.Component{
                 </FormGroup>
 
 
-                {
-                    process.env.REACT_APP_FEATURE_CATEGORY ?
-                <FormGroup row>
-                    <Label for="product_category_id">Category</Label>
-                    <Input type="number" name="category_id" id="product_category_id"  />
-                </FormGroup>
-                        : '' }
-
-
                 <FormGroup check row>
-                    <Link to={{ pathname: `/products` }}>Cancel</Link>
+                    <Link to={{ pathname: `/categories` }}>Cancel</Link>
                     <Button className="btn-success btn-lg">{this.state.editMode ? 'Update' : 'Save'}</Button>
 
                 </FormGroup>
@@ -241,4 +209,4 @@ class ProductNew extends React.Component{
     }
 }
 
-export default withRouter(ProductNew);
+export default withRouter(CategoryNew);
