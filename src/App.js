@@ -13,6 +13,9 @@ class App extends Component {
     state = {
         api_host: process.env.REACT_APP_API_HOST,
         currentPage: 1,
+        currentAmount: 0,
+        totalAmount: 100,
+        progressPercent: 0,
         products: [
             { id: 1, lang: {en: 'Apple'}, category_id: 1, image: 'image.png', nutrition: { calories: 100 } },
             { id: 2, lang: {en: 'Banana'}, category_id: 1, image: 'image.png', nutrition: { calories: 104 } },
@@ -22,6 +25,12 @@ class App extends Component {
     pageHandler = e => {
         this.state.currentPage = e.selected + 1;
         this.fetchProducts();
+    }
+
+    setProgress(total){
+        this.setState({currentAmount: total});
+        let percent = this.state.totalAmount / 100 * total;
+        this.setState({progressPercent: percent});
     }
 
     fetchProducts(){
@@ -35,6 +44,7 @@ class App extends Component {
                 console.log(response);
                 self.setState({products: response.data.products});
                 self.setState({totalPages: response.data.meta.totalPages});
+                self.setProgress(response.data.meta.total);
             })
             .catch(function (response) {
                 console.log(response);
@@ -96,7 +106,13 @@ class App extends Component {
       <div className="App">
           <Header />
         <Switch>
-            <Route path='/' exact component={Home} />
+            <Route path='/' exact render={() => {
+                return <Home
+                    totalAmount={this.state.totalAmount}
+                    currentAmount={this.state.currentAmount}
+                    progressPercent={this.state.progressPercent}
+                />
+            }} />
         <Route path="/products/new" exact render={() => (
           <ProductNew handler={this.addProductHandler.bind(this)}/>
         )} />
@@ -106,7 +122,15 @@ class App extends Component {
         )} />
 
         <Route path="/products" exact render={() => {
-          return <ProductList currentPage={this.state.currentPage} totalPages={this.state.totalPages} pageHandler={this.pageHandler.bind(this)} removeHandler={this.removeProductHandler.bind(this)} products={this.state.products}/>
+          return <ProductList
+              progressPercent={this.state.progressPercent}
+              totalAmount={this.state.totalAmount}
+              currentAmount={this.state.currentAmount}
+              currentPage={this.state.currentPage}
+              totalPages={this.state.totalPages}
+              pageHandler={this.pageHandler.bind(this)}
+              removeHandler={this.removeProductHandler.bind(this)}
+              products={this.state.products}/>
         }} />
 
             <Route path="/products/:id" removeHandler={this.removeProductHandler.bind(this)} component={ProductShow} />

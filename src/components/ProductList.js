@@ -3,13 +3,21 @@ import { Link } from 'react-router-dom';
 import { Table, Button } from 'reactstrap';
 import ReactPaginate from 'react-paginate';
 import TimeAgo from 'react-timeago'
+import { Line } from 'rc-progress';
 
 class ProductList extends React.Component{
 
     render(){
         return(
             <div className="container productList">
-          <h2>Products:</h2>
+                <div className="row">
+                    <div className="col">
+                <h2>Products: {this.props.currentAmount } / {this.props.totalAmount}</h2>
+                <Line percent={this.props.progressPercent} strokeWidth="1" strokeColor="#2db7f5" />
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col">
                 <Table bordered striped>
                     <thead>
                         <tr>
@@ -64,6 +72,8 @@ class ProductList extends React.Component{
                     previousLinkClassName={'page-link'}
                     nextLinkClassName={'page-link'}
                 />
+                    </div>
+                </div>
 
             </div>
         )
