@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Card, CardImg, CardText, CardBody,
     CardTitle, CardSubtitle, Button } from 'reactstrap';
 
@@ -16,10 +17,8 @@ class ProductShow extends React.Component{
                         <CardText>
                             {product.nutrition.calories}
                         </CardText>
-                        {process.env.REACT_APP_FEATURE_EDIT_PRODUCT ?
-                            <Button color='warning'>Edit</Button>
-                            : ''
-                        }
+                        <Link to={{ pathname: `/products` }}>Cancel</Link>
+                        <Link to={{ pathname: `/products/'${product.id}/edit`, state: { product: product } }}>Edit</Link>
                     </CardBody>
                 </Card>
             </div>

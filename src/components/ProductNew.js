@@ -1,5 +1,5 @@
 import React from 'react';
-import { withRouter } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import { Button, Form, FormGroup, Label, Input } from 'reactstrap';
 import axios from 'axios';
 import ImagePicker from './ImagePicker';
@@ -231,7 +231,9 @@ class ProductNew extends React.Component{
 
 
                 <FormGroup check row>
-                        <Button className="btn-success btn-lg">{this.state.editMode ? 'Update' : 'Save'}</Button>
+                    <Link to={{ pathname: `/products` }}>Cancel</Link>
+                    <Button className="btn-success btn-lg">{this.state.editMode ? 'Update' : 'Save'}</Button>
+
                 </FormGroup>
             </Form>
             </div>
