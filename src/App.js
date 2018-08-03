@@ -196,7 +196,7 @@ class App extends Component {
             )} />
 
         <Route path="/products/:id/edit" exact render={() => (
-            <ProductNew handler={this.editProductHandler.bind(this)} products={this.state.categories} />
+            <ProductNew handler={this.editProductHandler.bind(this)} products={this.state.products} />
         )} />
 
             <Route path="/categories/:id/edit" exact render={() => (

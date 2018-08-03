@@ -1,11 +1,21 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import { Table, Button } from 'reactstrap';
 import ReactPaginate from 'react-paginate';
 import TimeAgo from 'react-timeago'
 import { Line } from 'rc-progress';
 
 class ProductList extends React.Component{
+
+    showHandler = (e) => {
+        const history = this.props.history;
+        let id = e.target.parentElement.getAttribute('data-id');
+        let product = this.props.products.find(item => item.id == id);
+        history.push({
+            pathname: '/products/' + id,
+            state: { product: product }
+        });
+    }
 
     render(){
         return(
@@ -18,7 +28,7 @@ class ProductList extends React.Component{
                 </div>
                 <div className="row">
                     <div className="col">
-                <Table bordered striped>
+                <Table>
                     <thead>
                         <tr>
                             <th>#</th>
@@ -37,7 +47,7 @@ class ProductList extends React.Component{
                     let lang_en = product.lang !== null && product.lang.en;
                     let calories = product.nutrition !== null && product.nutrition.calories;
 
-                    return (<tr key={product.id}>
+                    return (<tr key={product.id} data-id={product.id} onDoubleClick={this.showHandler.bind(this)}>
                         <th scope="row">{product.id}</th>
                         <td><img className="" height="50px" src={product.image} alt={product.image} /></td>
                         <td>{lang_en}</td>
@@ -48,8 +58,8 @@ class ProductList extends React.Component{
                             <TimeAgo date={product.updated_at} />
                                 : '-' }
                         </td>
-                        <td><Link to={{ pathname: `/products/'${product.id}`, state: { product: product } }}>Show</Link></td>
-                        <td><Link to={{ pathname: `/products/'${product.id}/edit`, state: { product: product } }}>Edit</Link></td>
+                        <td><Link to={{ pathname: `/products/${product.id}`, state: { product: product } }}>Show</Link></td>
+                        <td><Link to={{ pathname: `/products/${product.id}/edit`, state: { product: product } }}>Edit</Link></td>
                         <td><Button onClick={this.props.removeHandler.bind(this, product)}>Remove</Button></td>
                             </tr>)
                 }) }
@@ -61,7 +71,7 @@ class ProductList extends React.Component{
                     breakLabel={<a href="">...</a>}
                     breakClassName={"break-me"}
                     pageCount={this.props.totalPages}
-                    onPageChange={this.props.pageProductHandler}
+                    onPageChange={this.props.pageHandler}
                     containerClassName={"pagination justify-content-center"}
                     subContainerClassName={"pages pagination"}
                     activeClassName={"active"}
@@ -80,4 +90,4 @@ class ProductList extends React.Component{
     }
 }
 
-export default ProductList;
+export default withRouter(ProductList);

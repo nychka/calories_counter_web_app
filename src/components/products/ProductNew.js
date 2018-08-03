@@ -30,9 +30,10 @@ class ProductNew extends React.Component{
 
     fetchCategories() {
         const self = this;
+        let api_host = self.state.api_host || self.props.parentState.api_host;
         axios({
             method: 'get',
-            url: self.props.parentState.api_host + '/categories',
+            url: api_host + '/categories',
             config: { headers: {'Content-Type': 'json' }}
         })
             .then(function (response) {
