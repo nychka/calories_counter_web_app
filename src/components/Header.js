@@ -41,6 +41,9 @@ class Header extends React.Component
                                 <NavLink className="btn btn-default" href="/products/new">New Product</NavLink>
                             </NavItem>
                             <NavItem>
+                                <NavLink className="btn btn-default" href="/categories/new">New Category</NavLink>
+                            </NavItem>
+                            <NavItem>
                                 <NavLink href="/products">Products</NavLink>
                             </NavItem>
                             <NavItem>

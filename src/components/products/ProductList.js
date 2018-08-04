@@ -35,6 +35,7 @@ class ProductList extends React.Component{
                             <th>Image</th>
                             <th>Title</th>
                             <th>Calories</th>
+                            <th>Category</th>
                             <th>Created</th>
                             <th>Updated</th>
                             <th>Show</th>
@@ -46,12 +47,15 @@ class ProductList extends React.Component{
                 { this.props.products.map(product => {
                     let lang_en = product.lang !== null && product.lang.en;
                     let calories = product.nutrition !== null && product.nutrition.calories;
+                    let category = product.category && product.category.lang && product.category.lang.en;
+                    let style = !category ? {backgroundColor: 'red'} : {};
 
                     return (<tr key={product.id} data-id={product.id} onDoubleClick={this.showHandler.bind(this)}>
                         <th scope="row">{product.id}</th>
                         <td><img className="" height="50px" src={product.image} alt={product.image} /></td>
                         <td>{lang_en}</td>
                         <td>{calories}</td>
+                        <td style={style}>{category}</td>
                         <td><TimeAgo date={product.created_at} /></td>
                         <td>
                             { (product.created_at !== product.updated_at) ?

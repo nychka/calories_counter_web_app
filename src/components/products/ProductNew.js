@@ -11,14 +11,26 @@ class ProductNew extends React.Component{
        product: { id: 0, lang: { en: '', ua: '', ru: ''}, image: '', nutrition: { calories: ''}},
        editMode: false,
        suggestions: [],
-       selectedCategory: null,
        categoryOptions: [],
-       categories: []
+       categories: [],
+       selectedCategory: '',
+       canTranslate: false
    }
 
    selectCategoryHandler = selected => {
-       this.setState({selectedCategory: selected});
-       console.log('selected category', selected);
+      let category_id = selected.value;
+      let category = this.state.categories.find(item => item.id == category_id);
+      let product = this.state.product;
+      this.setState({selectedCategory: this.buildCategoryOption(category)});
+      product.category = category;
+      this.setState({product: product});
+   }
+
+   selectCategory(product){
+      if(product.category && product.category.lang){
+          let option = this.buildCategoryOption(product.category);
+          this.setState({selectedCategory: option});
+      }
    }
 
    pickImageHandler(e){
@@ -40,26 +52,38 @@ class ProductNew extends React.Component{
                 console.log(response);
                 self.setState({categories: response.data.categories});
                 self.setState({totalCategoryPages: response.data.meta.totalPages});
-                const options = response.data.categories.map(item => {
-                    return { value: item.id, label: item.lang.en }
-                });
+                const options = response.data.categories.map(item => self.buildCategoryOption(item));
                 self.setState({categoryOptions: options});
             })
             .catch(function (response) {
                 console.log(response);
             });
     }
+    buildCategoryOption(item){
+        return { value: item.id, label: item.lang.en };
+    }
 
    componentDidMount(){
        console.log(this.props.location.state);
-       if(this.props.location.state && this.props.location.state.hasOwnProperty('product')) {
-           this.setState({product: this.props.location.state.product});
+       const product = this.props.location.state &&
+           this.props.location.state.hasOwnProperty('product') &&
+           this.props.location.state.product;
+
+       if(product) {
+           this.setState({product: product});
            this.setState({editMode: true});
+           this.selectCategory(product);
        }
        this.fetchCategories();
    }
 
+   canTranslateHandler(e){
+       console.log('can translate', e.target.checked);
+       this.setState({canTranslate: e.target.checked});
+   }
+
    onBlur(e){
+       if(!this.state.canTranslate) return false;
        const self = this;
 
        if(e.target.value.length < 2) return false;
@@ -183,6 +207,10 @@ class ProductNew extends React.Component{
     render(){
         return(
             <div className="container">
+                <div className="container">
+                    <Label for="can_translate_option">Can translate</Label>
+                    <input type='checkbox' onChange={this.canTranslateHandler.bind(this)} name='can_translate' id='can_translate_option' />
+                </div>
             <Form onSubmit={this.submitHandler}>
                 {this.state.editMode ?
                 <input type="hidden" name="id" value={this.state.product.id} />
@@ -249,8 +277,10 @@ class ProductNew extends React.Component{
                 <FormGroup row>
                     <Label for="product_category_id">Category</Label>
                     <Select
+                        id='product_category_id'
+                        name='category_id'
                         value={this.state.selectedCategory}
-                        onChange={this.selectCategoryHandler}
+                        onChange={this.selectCategoryHandler.bind(this)}
                         options={this.state.categoryOptions}
                         className={'form-control'}
                     />
