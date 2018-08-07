@@ -16,7 +16,7 @@ class App extends Component {
     state = {
         api_host: process.env.REACT_APP_API_HOST,
         currentUser: null,
-        auth_header: null,
+        accessToken: null,
         currentProductPage: 1,
         currentCategoryPage: 1,
         totalProductPages: 1,
@@ -33,7 +33,9 @@ class App extends Component {
 
     authorizeUser = (user, token) => {
         this.setState({currentUser: user});
-        this.setState({auth_header: token});
+        this.setState({access_token: token});
+        localStorage.setItem('access_token', token);
+        localStorage.setItem('current_user', user);
     }
 
     pageProductHandler = e => {
@@ -88,7 +90,12 @@ class App extends Component {
     }
 
     componentDidMount(){
-        if(this.state.currentUser){
+        const accessToken = localStorage.getItem('access_token');
+        const currentUser = localStorage.getItem('current_user');
+        // this.setState('access_token', accessToken);
+        // this.setState('currentUser', currentUser);
+
+        if(currentUser){
             this.fetchCategories();
             this.fetchProducts();
         }
@@ -217,8 +224,7 @@ class App extends Component {
             )} />
 
         <Route path="/products" exact render={() => {
-          return this.state.currentUser ?
-              <ProductList
+              return <ProductList
               progressPercent={this.state.progressPercent}
               totalAmount={this.state.totalAmount}
               currentAmount={this.state.currentAmount}
@@ -228,18 +234,15 @@ class App extends Component {
               removeHandler={this.removeProductHandler.bind(this)}
               fetchHandler={this.fetchProducts.bind(this)}
               products={this.state.products}/>
-              : <Redirect to={'/login'} />;
         }} />
 
             <Route path="/categories" exact render={() => {
-                return this.state.currentUser ?
-                <CategoryList
+                return <CategoryList
                     currentPage={this.state.currentCategoryPage}
                     totalPages={this.state.totalCategoryPages}
                     pageHandler={this.pageCategoryHandler.bind(this)}
                     removeHandler={this.removeCategoryHandler.bind(this)}
                     categories={this.state.categories}/>
-                    :  <Redirect to={'/login'} />
             }} /> }
 
             <Route path="/products/:id" removeHandler={this.removeProductHandler.bind(this)} component={ProductShow} />
