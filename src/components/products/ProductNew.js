@@ -83,7 +83,6 @@ class ProductNew extends React.Component{
    }
 
    onBlur(e){
-       if(!this.state.canTranslate) return false;
        const self = this;
 
        if(e.target.value.length < 2) return false;
@@ -114,7 +113,7 @@ class ProductNew extends React.Component{
                console.error(response);
            })
 
-       if(preparedParams.length){
+       if(preparedParams.length && this.state.canTranslate){
            let query = `from=${currentLang}&to=${preparedParams.join(',')}`;
 
            axios
