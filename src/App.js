@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Switch, Redirect } from 'react-router-dom';
 import Header from './components/Header';
 import Home from './components/Home';
 import './App.css';
@@ -8,12 +8,15 @@ import CategoryList from "./components/categories/CategoryList";
 import CategoryNew from './components/categories/CategoryNew';
 import ProductNew from './components/products/ProductNew';
 import ProductShow from './components/products/ProductShow';
+import Login from './components/Login';
 import axios from "axios/index";
 
 class App extends Component {
 
     state = {
         api_host: process.env.REACT_APP_API_HOST,
+        currentUser: null,
+        auth_header: null,
         currentProductPage: 1,
         currentCategoryPage: 1,
         totalProductPages: 1,
@@ -26,6 +29,11 @@ class App extends Component {
             { id: 2, lang: {en: 'Banana'}, category_id: 1, image: 'image.png', nutrition: { calories: 104 } },
         ],
         categories: []
+    }
+
+    authorizeUser = (user, token) => {
+        this.setState({currentUser: user});
+        this.setState({auth_header: token});
     }
 
     pageProductHandler = e => {
@@ -49,7 +57,7 @@ class App extends Component {
         axios({
             method: 'get',
             url: self.state.api_host + '/products?page='+self.state.currentProductPage,
-            config: { headers: {'Content-Type': 'json' }}
+            config: { headers: {'Content-Type': 'json', 'Authorization': self.state.auth_header }}
         })
             .then(function (response) {
                 console.log(response);
@@ -67,7 +75,7 @@ class App extends Component {
         axios({
             method: 'get',
             url: self.state.api_host + '/categories?page='+self.state.currentCategoryPage,
-            config: { headers: {'Content-Type': 'json' }}
+            config: { headers: {'Content-Type': 'json', 'Authorization': self.state.auth_header }}
         })
             .then(function (response) {
                 console.log(response);
@@ -80,8 +88,10 @@ class App extends Component {
     }
 
     componentDidMount(){
-        this.fetchCategories();
-        this.fetchProducts();
+        if(this.state.currentUser){
+            this.fetchCategories();
+            this.fetchProducts();
+        }
     }
 
     addProductHandler = (product) => {
@@ -180,6 +190,9 @@ class App extends Component {
       <div className="App">
           <Header />
         <Switch>
+            <Route path='/login' exact render={() => {
+                return <Login authHandler={this.authorizeUser.bind(this)} />
+            }} />
             <Route path='/' exact render={() => {
                 return <Home
                     totalAmount={this.state.totalAmount}
@@ -204,7 +217,8 @@ class App extends Component {
             )} />
 
         <Route path="/products" exact render={() => {
-          return <ProductList
+          return this.state.currentUser ?
+              <ProductList
               progressPercent={this.state.progressPercent}
               totalAmount={this.state.totalAmount}
               currentAmount={this.state.currentAmount}
@@ -212,17 +226,21 @@ class App extends Component {
               totalPages={this.state.totalProductPages}
               pageHandler={this.pageProductHandler.bind(this)}
               removeHandler={this.removeProductHandler.bind(this)}
+              fetchHandler={this.fetchProducts.bind(this)}
               products={this.state.products}/>
+              : <Redirect to={'/login'} />;
         }} />
 
             <Route path="/categories" exact render={() => {
-                return <CategoryList
+                return this.state.currentUser ?
+                <CategoryList
                     currentPage={this.state.currentCategoryPage}
                     totalPages={this.state.totalCategoryPages}
                     pageHandler={this.pageCategoryHandler.bind(this)}
                     removeHandler={this.removeCategoryHandler.bind(this)}
                     categories={this.state.categories}/>
-            }} />
+                    :  <Redirect to={'/login'} />
+            }} /> }
 
             <Route path="/products/:id" removeHandler={this.removeProductHandler.bind(this)} component={ProductShow} />
         </Switch>

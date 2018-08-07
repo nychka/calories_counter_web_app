@@ -17,6 +17,10 @@ class ProductList extends React.Component{
         });
     }
 
+    componentDidMount(){
+        this.props.fetchHandler();
+    }
+
     render(){
         return(
             <div className="container productList">
