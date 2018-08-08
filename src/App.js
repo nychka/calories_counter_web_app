@@ -16,7 +16,6 @@ class App extends Component {
     state = {
         api_host: process.env.REACT_APP_API_HOST,
         currentUser: null,
-        auth_header: null,
         currentProductPage: 1,
         currentCategoryPage: 1,
         totalProductPages: 1,
@@ -32,8 +31,8 @@ class App extends Component {
     }
 
     authorizeUser = (user, token) => {
-        this.setState({currentUser: user});
-        this.setState({auth_header: token});
+        localStorage.setItem('currentUser', JSON.stringify(user));
+        localStorage.setItem('accessToken', token);
     }
 
     pageProductHandler = e => {
@@ -52,12 +51,24 @@ class App extends Component {
         this.setState({progressPercent: percent});
     }
 
+    headers(){
+        const accessToken = localStorage.getItem('accessToken');
+
+        return { 'Content-Type': 'json', 'Authorization': accessToken };
+    }
+
+    currentUser(){
+        if(localStorage.hasItem('currentUser') && localStorage.getItem('currentUser').length){
+            return JSON.parse(localStorage.getItem('currentUser'));
+        }
+    }
+
     fetchProducts(){
         const self = this;
         axios({
             method: 'get',
             url: self.state.api_host + '/products?page='+self.state.currentProductPage,
-            config: { headers: {'Content-Type': 'json', 'Authorization': self.state.auth_header }}
+            config: { headers: self.headers()}
         })
             .then(function (response) {
                 console.log(response);
@@ -75,7 +86,7 @@ class App extends Component {
         axios({
             method: 'get',
             url: self.state.api_host + '/categories?page='+self.state.currentCategoryPage,
-            config: { headers: {'Content-Type': 'json', 'Authorization': self.state.auth_header }}
+            config: { headers: self.headers()}
         })
             .then(function (response) {
                 console.log(response);
@@ -217,8 +228,7 @@ class App extends Component {
             )} />
 
         <Route path="/products" exact render={() => {
-          return this.state.currentUser ?
-              <ProductList
+          return <ProductList
               progressPercent={this.state.progressPercent}
               totalAmount={this.state.totalAmount}
               currentAmount={this.state.currentAmount}
@@ -228,18 +238,15 @@ class App extends Component {
               removeHandler={this.removeProductHandler.bind(this)}
               fetchHandler={this.fetchProducts.bind(this)}
               products={this.state.products}/>
-              : <Redirect to={'/login'} />;
         }} />
 
             <Route path="/categories" exact render={() => {
-                return this.state.currentUser ?
-                <CategoryList
+                return <CategoryList
                     currentPage={this.state.currentCategoryPage}
                     totalPages={this.state.totalCategoryPages}
                     pageHandler={this.pageCategoryHandler.bind(this)}
                     removeHandler={this.removeCategoryHandler.bind(this)}
                     categories={this.state.categories}/>
-                    :  <Redirect to={'/login'} />
             }} /> }
 
             <Route path="/products/:id" removeHandler={this.removeProductHandler.bind(this)} component={ProductShow} />
