@@ -16,17 +16,8 @@ class App extends Component {
     state = {
         api_host: process.env.REACT_APP_API_HOST,
         currentUser: null,
-        currentProductPage: 1,
         currentCategoryPage: 1,
-        totalProductPages: 1,
         totalCategoryPages: 1,
-        currentAmount: 0,
-        totalAmount: 100,
-        progressPercent: 0,
-        products: [
-            { id: 1, lang: {en: 'Apple'}, category_id: 1, image: 'image.png', nutrition: { calories: 100 } },
-            { id: 2, lang: {en: 'Banana'}, category_id: 1, image: 'image.png', nutrition: { calories: 104 } },
-        ],
         categories: []
     }
 
@@ -35,20 +26,9 @@ class App extends Component {
         localStorage.setItem('accessToken', token);
     }
 
-    pageProductHandler = e => {
-        this.state.currentProductPage = e.selected + 1;
-        this.fetchProducts();
-    }
-
     pageCategoryHandler = e => {
         this.state.currentCategoryPage = e.selected + 1;
         this.fetchCategories();
-    }
-
-    setProgress(total){
-        this.setState({currentAmount: total});
-        let percent = this.state.totalAmount / 100 * total;
-        this.setState({progressPercent: percent});
     }
 
     headers(){
@@ -58,28 +38,18 @@ class App extends Component {
     }
 
     currentUser(){
-        if(localStorage.hasItem('currentUser') && localStorage.getItem('currentUser').length){
-            return JSON.parse(localStorage.getItem('currentUser'));
+        if(this.state.currentUser) return this.state.currentUser;
+
+        if(localStorage.getItem('currentUser') && localStorage.getItem('currentUser').length){
+           let user = JSON.parse(localStorage.getItem('currentUser'));
+           this.setState({currentUser: user});
+           return user;
+        }else{
+            return false;
         }
     }
 
-    fetchProducts(){
-        const self = this;
-        axios({
-            method: 'get',
-            url: self.state.api_host + '/products?page='+self.state.currentProductPage,
-            config: { headers: self.headers()}
-        })
-            .then(function (response) {
-                console.log(response);
-                self.setState({products: response.data.products});
-                self.setState({totalProductPages: response.data.meta.totalPages});
-                self.setProgress(response.data.meta.total);
-            })
-            .catch(function (response) {
-                console.log(response);
-            });
-    }
+
 
     fetchCategories() {
         const self = this;
@@ -99,62 +69,9 @@ class App extends Component {
     }
 
     componentDidMount(){
-        const accessToken = localStorage.getItem('access_token');
-        const currentUser = localStorage.getItem('current_user');
-        // this.setState('access_token', accessToken);
-        // this.setState('currentUser', currentUser);
-
-        if(currentUser){
-            this.fetchCategories();
-            this.fetchProducts();
-        }
+        this.currentUser();
     }
 
-    addProductHandler = (product) => {
-        let products = this.state.products;
-        products.unshift(product);
-
-        this.setState({products: products});
-    }
-
-    editProductHandler = (product) => {
-        let products = this.state.products;
-
-        products.map((item, i) => {
-            if(item.id === product.id){
-                products[i] = product;
-                return true;
-            }
-        });
-
-        this.setState({products: products});
-    }
-
-    removeProductHandler = product => {
-        let canRemove = window.confirm('Are you really want to delete this product?');
-        let url = `${this.state.api_host}/products/${product.id}`;
-        let products = this.state.products;
-        const self = this;
-
-        if(canRemove){
-            axios.delete(url)
-            .then((response) => {
-                products.map((item, i) => {
-                    if(item.id === product.id){
-                        products.splice(i, 1);
-                        self.setState({products: products});
-                        return false;
-                    }
-                });
-                console.log(response);
-            })
-            .catch((response) => {
-                console.log(response);
-            })
-        }else{
-            return false;
-        }
-    }
     addCategoryHandler = (product) => {
         let products = this.state.categories;
         products.unshift(product);
@@ -216,34 +133,23 @@ class App extends Component {
                     progressPercent={this.state.progressPercent}
                 />
             }} />
-        <Route path="/products/new" exact render={() => {
-           return <ProductNew parentState={this.state} handler={this.addProductHandler.bind(this)}/>
+        {/*<Route path="/products/new" exact render={() => {*/}
+           {/*return <ProductNew parentState={this.state} handler={this.addProductHandler.bind(this)}/>*/}
         }} />
 
             <Route path="/categories/new" exact render={() => (
                 <CategoryNew handler={this.addCategoryHandler.bind(this)}/>
             )} />
 
-        <Route path="/products/:id/edit" exact render={() => (
-            <ProductNew handler={this.editProductHandler.bind(this)} products={this.state.products} />
+        {/*<Route path="/products/:id/edit" exact render={() => (*/}
+            {/*<ProductNew handler={this.editProductHandler.bind(this)} products={this.state.products} />*/}
         )} />
 
             <Route path="/categories/:id/edit" exact render={() => (
                 <CategoryNew handler={this.editCategoryHandler.bind(this)} products={this.state.categories} />
             )} />
 
-        <Route path="/products" exact render={() => {
-          return <ProductList
-              progressPercent={this.state.progressPercent}
-              totalAmount={this.state.totalAmount}
-              currentAmount={this.state.currentAmount}
-              currentPage={this.state.currentProductPage}
-              totalPages={this.state.totalProductPages}
-              pageHandler={this.pageProductHandler.bind(this)}
-              removeHandler={this.removeProductHandler.bind(this)}
-              fetchHandler={this.fetchProducts.bind(this)}
-              products={this.state.products}/>
-        }} />
+        <Route path="/products" exact render={() =>  <ProductList headers={this.headers.bind(this)} currentUser={this.currentUser.bind(this)}/>}/>
 
             <Route path="/categories" exact render={() => {
                 return <CategoryList
@@ -254,7 +160,7 @@ class App extends Component {
                     categories={this.state.categories}/>
             }} /> }
 
-            <Route path="/products/:id" removeHandler={this.removeProductHandler.bind(this)} component={ProductShow} />
+            {/*<Route path="/products/:id" removeHandler={this.removeProductHandler.bind(this)} component={ProductShow} />*/}
         </Switch>
 
       </div>
