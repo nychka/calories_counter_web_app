@@ -25,13 +25,11 @@ class Login extends React.Component{
         })
             .then(function (response) {
                 console.log(response.data);
-                let auth_header = response.headers.authorization;
+                let authorization = response.headers.authorization;
                 let user = response.data;
-                handler(user, auth_header);
-                console.log(user, auth_header);
-                history.push({
-                    pathname: '/products'
-                });
+                handler(user, authorization);
+                console.log(user, authorization);
+                history.push({ pathname: '/'});
             })
             .catch(function (response) {
                 console.log(response);
