@@ -3,14 +3,14 @@ import { Link, withRouter } from 'react-router-dom';
 import { Button, Form, FormGroup, Label, Input } from 'reactstrap';
 import axios from 'axios';
 import ImagePicker from '../ImagePicker';
+import { API_HOST } from "../../utils";
 
 class CategoryNew extends React.Component{
    state = {
-       api_host: process.env.REACT_APP_API_HOST,
        product: { id: 0, lang: { en: '', ua: '', ru: ''}, image: ''},
        editMode: false,
        suggestions: []
-   }
+   };
 
    pickImageHandler(e){
        let imageUrl = e.target.src;
@@ -22,8 +22,8 @@ class CategoryNew extends React.Component{
    componentDidMount(){
        console.log(this.props.location.state);
        if(this.props.location.state && this.props.location.state.hasOwnProperty('product')){
-           this.setState({product: this.props.location.state.product})
-           this.setState({editMode: true})
+           this.setState({product: this.props.location.state.product});
+           this.setState({editMode: true});
        }
    }
 
@@ -49,7 +49,7 @@ class CategoryNew extends React.Component{
 
 
        axios
-           .get(`${this.state.api_host}/image_search/search?q=${e.target.value}`)
+           .get(`${API_HOST}/image_search/search?q=${e.target.value}`)
            .then(response => {
                self.setState({suggestions: response.data.value});
                console.log(response)
@@ -62,14 +62,14 @@ class CategoryNew extends React.Component{
            let query = `from=${currentLang}&to=${preparedParams.join(',')}`;
 
            axios
-               .get(`${this.state.api_host}/translates/translate?q=${e.target.value}&${query}`)
+               .get(`${API_HOST}/translates/translate?q=${e.target.value}&${query}`)
                .then(response => {
                    console.log(response);
                    let translations = response.data[0]['translations'];
                    let product = self.state.product;
-                   translations.map(item => {
+                   translations.forEach(item => {
                        let lang = item.to;
-                       if(item.to == 'uk') lang = 'ua';
+                       if(item.to === 'uk') lang = 'ua';
 
                        product['lang'][lang] = item.text.toLowerCase();
                    })
@@ -119,7 +119,7 @@ class CategoryNew extends React.Component{
 
         const handler = this.props.handler;
         const history = this.props.history;
-        let url = this.state.api_host + '/categories';
+        let url = API_HOST + '/categories';
         url += this.state.editMode ? ('/' + this.state.product.id) : '';
         axios({
             method: method,

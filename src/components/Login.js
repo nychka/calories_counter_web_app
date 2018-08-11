@@ -2,38 +2,30 @@ import React from 'react';
 import axios from "axios/index";
 import { Button, Form, FormGroup, Label, Input } from 'reactstrap';
 import { withRouter } from 'react-router-dom';
+import { defaultHeaders, API_HOST, saveCurrentUser } from "../utils";
 
 class Login extends React.Component{
-    state = {
-        api_host: process.env.REACT_APP_API_HOST
-    }
+
     submitHandler = (e) => {
         e.preventDefault();
-        let formData = new FormData(e.target);
-        let method = 'post';
-        const self = this;
-
-        const handler = this.props.authHandler;
+        const formData = new FormData(e.target);
         const history = this.props.history;
-        let url = this.state.api_host + '/users/sign_in';
 
         axios({
-            method: method,
-            url: url,
+            method: 'post',
+            url: API_HOST + '/users/sign_in',
             data: formData,
-            config: { headers: {'Content-Type': 'json' }}
+            headers: defaultHeaders()
         })
-            .then(function (response) {
-                console.log(response.data);
-                let authorization = response.headers.authorization;
-                let user = response.data;
-                handler(user, authorization);
-                console.log(user, authorization);
-                history.push({ pathname: '/'});
-            })
-            .catch(function (response) {
-                console.log(response);
-            });
+        .then(function (response) {
+            console.log(response.data);
+            saveCurrentUser(response.data, response.headers.authorization);
+
+            history.push({ pathname: '/'});
+        })
+        .catch(function (response) {
+            console.log(response);
+        });
     }
     render(){
         return(
@@ -64,7 +56,7 @@ class Login extends React.Component{
                     </FormGroup>
 
                     <FormGroup check row>
-                        <Button className="btn-success btn-lg">Login</Button>
+                        <Button className="btn-success btn-lg">Sign In</Button>
 
                     </FormGroup>
                 </Form>

@@ -3,9 +3,85 @@ import { Link } from 'react-router-dom';
 import { Table, Button } from 'reactstrap';
 import ReactPaginate from 'react-paginate';
 import TimeAgo from 'react-timeago'
-import { Line } from 'rc-progress';
+import {API_HOST, defaultHeaders} from "../../utils";
+import axios from "axios/index";
 
 class CategoryList extends React.Component{
+
+    state = {
+        currentCategoryPage: 1,
+        totalCategoryPages: 1,
+        categories: []
+    }
+
+    pageCategoryHandler = e => {
+        this.state.currentCategoryPage = e.selected + 1;
+        this.fetchCategories();
+    }
+
+    fetchCategories() {
+        const self = this;
+        axios({
+            method: 'get',
+            url: API_HOST + '/categories?page='+self.state.currentCategoryPage,
+            config: { headers: defaultHeaders}
+        })
+            .then(function (response) {
+                console.log(response);
+                self.setState({categories: response.data.categories});
+                self.setState({totalCategoryPages: response.data.meta.totalPages});
+            })
+            .catch(function (response) {
+                console.log(response);
+            });
+    }
+
+
+    addCategoryHandler = (product) => {
+        let products = this.state.categories;
+        products.unshift(product);
+
+        this.setState({categories: products});
+    }
+
+    editCategoryHandler = (product) => {
+        let products = this.state.categories;
+
+        products.map((item, i) => {
+            if(item.id === product.id){
+                products[i] = product;
+                return true;
+            }
+        });
+
+        this.setState({categories: products});
+    }
+
+    removeCategoryHandler = product => {
+        let canRemove = window.confirm('Are you really want to delete this product?');
+        let url = `${this.state.api_host}/categories/${product.id}`;
+        let products = this.state.categories;
+        const self = this;
+
+        if(canRemove){
+            axios.delete(url)
+                .then((response) => {
+                    products.map((item, i) => {
+                        if(item.id === product.id){
+                            products.splice(i, 1);
+                            self.setState({categories: products});
+                            return false;
+                        }
+                    });
+                    console.log(response);
+                })
+                .catch((response) => {
+                    console.log(response);
+                })
+        }else{
+            return false;
+        }
+    }
 
     render(){
         return(

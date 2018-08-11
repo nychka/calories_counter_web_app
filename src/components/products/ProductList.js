@@ -5,11 +5,11 @@ import ReactPaginate from 'react-paginate';
 import TimeAgo from 'react-timeago'
 import { Line } from 'rc-progress';
 import axios from "axios/index";
+import { defaultHeaders, API_HOST, userSignedIn } from "../../utils";
 
 class ProductList extends React.Component{
 
     state = {
-        api_host: process.env.REACT_APP_API_HOST,
         currentProductPage: 1,
         totalProductPages: 1,
         currentAmount: 0,
@@ -19,12 +19,11 @@ class ProductList extends React.Component{
     }
 
     componentDidMount(){
-        console.info('component mounted');
-        if(this.state.products.length === 0 && this.props.currentUser()){
+        console.info(this.state.products);
+        if(this.state.products.length === 0 && userSignedIn()){
             this.fetchProducts();
         }else{
             console.log('products count: ', this.state.products.length);
-            console.log('user: ', this.props.currentUser());
         }
     }
 
@@ -87,12 +86,12 @@ class ProductList extends React.Component{
     
     fetchProducts(){
         const self = this;
-        const headers = this.props.headers();
+        const history = this.props.history;
 
         axios({
             method: 'get',
-            url: self.state.api_host + '/products?page='+self.state.currentProductPage,
-            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'Authorization': headers.Authorization }
+            url: API_HOST + '/products?page='+self.state.currentProductPage,
+            headers: defaultHeaders()
         })
             .then(function (response) {
                 console.log(response);
@@ -101,7 +100,8 @@ class ProductList extends React.Component{
                 self.setProgress(response.data.meta.total);
             })
             .catch(function (response) {
-                console.log(response);
+                console.error(response);
+                history.push({pathname: '/logout'});
             });
     }
     showHandler = (e) => {
