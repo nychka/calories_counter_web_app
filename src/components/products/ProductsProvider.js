@@ -1,6 +1,5 @@
 import React from "react";
-import axios from "axios";
-import history from '../History';
+import {axio, defaultHeaders, history, userSignedIn} from "../../utils";
 
 export const ProductsContext = React.createContext({});
 
@@ -8,7 +7,6 @@ export class ProductsProvider extends React.Component{
     constructor(props){
         super(props);
         this.state = {
-            api_host: process.env.REACT_APP_API_HOST,
             currentPage: 1,
             totalPages: 0,
             currentAmount: 0,
@@ -25,7 +23,7 @@ export class ProductsProvider extends React.Component{
     }
 
     componentDidMount(){
-        this.fetch();
+        userSignedIn() ? this.fetch() : console.info('did not fetch');
         console.log('products provider did mount');
     }
 
@@ -36,10 +34,10 @@ export class ProductsProvider extends React.Component{
 
     fetch(){
         const self = this;
-        axios({
+        axio({
             method: 'get',
-            url: self.state.api_host + '/products?page='+self.state.currentPage,
-            config: { headers: {'Content-Type': 'json' }}
+            url: '/products?page='+self.state.currentPage,
+            headers: defaultHeaders()
         })
             .then(function (response) {
                 console.log(response);
@@ -49,6 +47,10 @@ export class ProductsProvider extends React.Component{
             })
             .catch(function (response) {
                 console.log(response);
+                history.push({
+                    pathname: '/logout',
+                    state: { error: '401' }
+                });
             });
     }
 
@@ -77,27 +79,35 @@ export class ProductsProvider extends React.Component{
 
     removeHandler = product => {
         let canRemove = window.confirm('Are you really want to delete this product?');
-        let url = `${this.state.api_host}/products/${product.id}`;
+        let url = `/products/${product.id}`;
         let products = this.state.products;
         const self = this;
         const total = this.state.currentAmount;
 
         if(canRemove){
-            axios.delete(url)
-                .then((response) => {
-                    products.map((item, i) => {
-                        if(item.id === product.id){
-                            products.splice(i, 1);
-                            self.setState({products: products});
-                            self.setProgress(total - 1);
-                            return false;
-                        }
-                    });
-                    console.log(response);
-                })
-                .catch((response) => {
-                    console.log(response);
-                })
+            axio({
+                method: 'delete',
+                url: url,
+                headers: defaultHeaders()
+            })
+            .then((response) => {
+                products.map((item, i) => {
+                    if(item.id === product.id){
+                        products.splice(i, 1);
+                        self.setState({products: products});
+                        self.setProgress(total - 1);
+                        return false;
+                    }
+                });
+                console.log(response);
+            })
+            .catch((response) => {
+                console.log(response);
+                history.push({
+                    pathname: '/logout',
+                    state: { error: response }
+                });
+            })
         }else{
             return false;
         }
