@@ -10,7 +10,7 @@ import ProductNew from './components/products/ProductNew';
 import ProductShow from './components/products/ProductShow';
 import { ProductsContext, ProductsProvider } from './components/products/ProductsProvider';
 import { CategoriesContext, CategoriesProvider } from "./components/categories/CategoriesProvider";
-import axios from "axios/index";
+
 
 class App extends React.Component {
 

@@ -1,5 +1,6 @@
 import React from "react";
 import axios from "axios";
+import history from '../History';
 
 export const ProductsContext = React.createContext({});
 
@@ -109,7 +110,6 @@ export class ProductsProvider extends React.Component{
     }
 
     showHandler = (e) => {
-        const history = this.props.history;
         let id = e.target.parentElement.getAttribute('data-id');
         let product = this.state.products.find(item => item.id == id);
         history.push({

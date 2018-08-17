@@ -6,6 +6,7 @@
     "axios": "^0.18.0",
     "bootstrap": "^4.1.2",
     "dotenv": "^6.0.0",
+    "history": "^4.7.2",
     "npm": "^6.2.0",
     "rc-progress": "^2.2.5",
     "react": "^16.4.1",
