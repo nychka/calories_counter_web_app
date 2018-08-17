@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { Table, Button } from 'reactstrap';
 import ReactPaginate from 'react-paginate';
 import TimeAgo from 'react-timeago'
-import { Line } from 'rc-progress';
 
 class CategoryList extends React.Component{
 

@@ -6,20 +6,33 @@ import ImagePicker from '../ImagePicker';
 import Select from 'react-select';
 
 class ProductNew extends React.Component{
-   state = {
-       api_host: process.env.REACT_APP_API_HOST,
-       product: { id: 0, lang: { en: '', ua: '', ru: ''}, image: '', nutrition: { calories: ''}},
-       editMode: false,
-       suggestions: [],
-       categoryOptions: [],
-       categories: [],
-       selectedCategory: '',
-       canTranslate: false
-   }
+    constructor(props){
+        super(props);
+
+        this.state = {
+            api_host: process.env.REACT_APP_API_HOST,
+            product: { id: 0, lang: { en: '', ua: '', ru: ''}, image: '', nutrition: { calories: ''}},
+            editMode: false,
+            imageSuggestions: [],
+            categoryOptions: [],
+            selectedCategory: '',
+            canTranslate: false,
+        }
+
+        if(props.categories.length === 0){
+            props.fetch((categories) => { this.buildOptions(categories) });
+        }else{
+            console.info('Categories found: ', props.categories.length);
+        }
+    }
+    buildOptions(categories){
+        const options = categories.map(item => this.buildCategoryOption(item));
+        this.setState({categoryOptions: options});
+    }
 
    selectCategoryHandler = selected => {
       let category_id = selected.value;
-      let category = this.state.categories.find(item => item.id == category_id);
+      let category = this.props.categories.find(item => item.id == category_id);
       let product = this.state.product;
       this.setState({selectedCategory: this.buildCategoryOption(category)});
       product.category = category;
@@ -40,31 +53,13 @@ class ProductNew extends React.Component{
        this.setState({product: product});
    }
 
-    fetchCategories() {
-        const self = this;
-        let api_host = self.state.api_host || self.props.parentState.api_host;
-        axios({
-            method: 'get',
-            url: api_host + '/categories',
-            config: { headers: {'Content-Type': 'json' }}
-        })
-            .then(function (response) {
-                console.log(response);
-                self.setState({categories: response.data.categories});
-                self.setState({totalCategoryPages: response.data.meta.totalPages});
-                const options = response.data.categories.map(item => self.buildCategoryOption(item));
-                self.setState({categoryOptions: options});
-            })
-            .catch(function (response) {
-                console.log(response);
-            });
-    }
+
     buildCategoryOption(item){
         return { value: item.id, label: item.lang.en };
     }
 
    componentDidMount(){
-       console.log(this.props.location.state);
+       if(this.props.categories.length) this.buildOptions(this.props.categories);
        const product = this.props.location.state &&
            this.props.location.state.hasOwnProperty('product') &&
            this.props.location.state.product;
@@ -74,7 +69,6 @@ class ProductNew extends React.Component{
            this.setState({editMode: true});
            this.selectCategory(product);
        }
-       this.fetchCategories();
    }
 
    canTranslateHandler(e){
@@ -106,7 +100,7 @@ class ProductNew extends React.Component{
        axios
            .get(`${this.state.api_host}/image_search/search?q=${e.target.value}`)
            .then(response => {
-               self.setState({suggestions: response.data.value});
+               self.setState({imageSuggestions: response.data.value});
                console.log(response)
            })
            .catch(response => {
@@ -264,8 +258,8 @@ class ProductNew extends React.Component{
                 </FormGroup>
 
                 <FormGroup row>
-                    { this.state.suggestions && this.state.suggestions.length ?
-                        <ImagePicker pickImageHandler={this.pickImageHandler.bind(this)} suggestions={this.state.suggestions} />
+                    { this.state.imageSuggestions && this.state.imageSuggestions.length ?
+                        <ImagePicker pickImageHandler={this.pickImageHandler.bind(this)} suggestions={this.state.imageSuggestions} />
                         : ''
                     }
                     <Label for="product_image">Image</Label>

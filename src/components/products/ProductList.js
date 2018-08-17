@@ -7,16 +7,6 @@ import { Line } from 'rc-progress';
 
 class ProductList extends React.Component{
 
-    showHandler = (e) => {
-        const history = this.props.history;
-        let id = e.target.parentElement.getAttribute('data-id');
-        let product = this.props.products.find(item => item.id == id);
-        history.push({
-            pathname: '/products/' + id,
-            state: { product: product }
-        });
-    }
-
     render(){
         return(
             <div className="container productList">
@@ -50,7 +40,7 @@ class ProductList extends React.Component{
                     let category = product.category && product.category.lang && product.category.lang.en;
                     let style = !category ? {backgroundColor: 'red'} : {};
 
-                    return (<tr key={product.id} data-id={product.id} onDoubleClick={this.showHandler.bind(this)}>
+                    return (<tr key={product.id} data-id={product.id} onDoubleClick={this.props.showHandler}>
                         <th scope="row">{product.id}</th>
                         <td><img className="" height="50px" src={product.image} alt={product.image} /></td>
                         <td>{lang_en}</td>

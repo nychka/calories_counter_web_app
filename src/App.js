@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { Route, Switch } from 'react-router-dom';
+import React from 'react';
+import { Route, Switch, withRouter } from 'react-router-dom';
 import Header from './components/Header';
 import Home from './components/Home';
 import './App.css';
@@ -8,225 +8,76 @@ import CategoryList from "./components/categories/CategoryList";
 import CategoryNew from './components/categories/CategoryNew';
 import ProductNew from './components/products/ProductNew';
 import ProductShow from './components/products/ProductShow';
+import { ProductsContext, ProductsProvider } from './components/products/ProductsProvider';
+import { CategoriesContext, CategoriesProvider } from "./components/categories/CategoriesProvider";
 import axios from "axios/index";
 
-class App extends Component {
-
-    state = {
-        api_host: process.env.REACT_APP_API_HOST,
-        currentProductPage: 1,
-        currentCategoryPage: 1,
-        totalProductPages: 1,
-        totalCategoryPages: 1,
-        currentAmount: 0,
-        totalAmount: 100,
-        progressPercent: 0,
-        products: [
-            { id: 1, lang: {en: 'Apple'}, category_id: 1, image: 'image.png', nutrition: { calories: 100 } },
-            { id: 2, lang: {en: 'Banana'}, category_id: 1, image: 'image.png', nutrition: { calories: 104 } },
-        ],
-        categories: []
-    }
-
-    pageProductHandler = e => {
-        this.state.currentProductPage = e.selected + 1;
-        this.fetchProducts();
-    }
-
-    pageCategoryHandler = e => {
-        this.state.currentCategoryPage = e.selected + 1;
-        this.fetchCategories();
-    }
-
-    setProgress(total){
-        this.setState({currentAmount: total});
-        let percent = this.state.totalAmount / 100 * total;
-        this.setState({progressPercent: percent});
-    }
-
-    fetchProducts(){
-        const self = this;
-        axios({
-            method: 'get',
-            url: self.state.api_host + '/products?page='+self.state.currentProductPage,
-            config: { headers: {'Content-Type': 'json' }}
-        })
-            .then(function (response) {
-                console.log(response);
-                self.setState({products: response.data.products});
-                self.setState({totalProductPages: response.data.meta.totalPages});
-                self.setProgress(response.data.meta.total);
-            })
-            .catch(function (response) {
-                console.log(response);
-            });
-    }
-
-    fetchCategories() {
-        const self = this;
-        axios({
-            method: 'get',
-            url: self.state.api_host + '/categories?page='+self.state.currentCategoryPage,
-            config: { headers: {'Content-Type': 'json' }}
-        })
-            .then(function (response) {
-                console.log(response);
-                self.setState({categories: response.data.categories});
-                self.setState({totalCategoryPages: response.data.meta.totalPages});
-            })
-            .catch(function (response) {
-                console.log(response);
-            });
-    }
-
-    componentDidMount(){
-        this.fetchCategories();
-        this.fetchProducts();
-    }
-
-    addProductHandler = (product) => {
-        let products = this.state.products;
-        products.unshift(product);
-
-        this.setState({products: products});
-    }
-
-    editProductHandler = (product) => {
-        let products = this.state.products;
-
-        products.map((item, i) => {
-            if(item.id === product.id){
-                products[i] = product;
-                return true;
-            }
-        });
-
-        this.setState({products: products});
-    }
-
-    removeProductHandler = product => {
-        let canRemove = window.confirm('Are you really want to delete this product?');
-        let url = `${this.state.api_host}/products/${product.id}`;
-        let products = this.state.products;
-        const self = this;
-
-        if(canRemove){
-            axios.delete(url)
-            .then((response) => {
-                products.map((item, i) => {
-                    if(item.id === product.id){
-                        products.splice(i, 1);
-                        self.setState({products: products});
-                        return false;
-                    }
-                });
-                console.log(response);
-            })
-            .catch((response) => {
-                console.log(response);
-            })
-        }else{
-            return false;
-        }
-    }
-    addCategoryHandler = (product) => {
-        let products = this.state.categories;
-        products.unshift(product);
-
-        this.setState({categories: products});
-    }
-
-    editCategoryHandler = (product) => {
-        let products = this.state.categories;
-
-        products.map((item, i) => {
-            if(item.id === product.id){
-                products[i] = product;
-                return true;
-            }
-        });
-
-        this.setState({categories: products});
-    }
-
-    removeCategoryHandler = product => {
-        let canRemove = window.confirm('Are you really want to delete this product?');
-        let url = `${this.state.api_host}/categories/${product.id}`;
-        let products = this.state.categories;
-        const self = this;
-
-        if(canRemove){
-            axios.delete(url)
-                .then((response) => {
-                    products.map((item, i) => {
-                        if(item.id === product.id){
-                            products.splice(i, 1);
-                            self.setState({categories: products});
-                            return false;
-                        }
-                    });
-                    console.log(response);
-                })
-                .catch((response) => {
-                    console.log(response);
-                })
-        }else{
-            return false;
-        }
-    }
+class App extends React.Component {
 
   render() {
     return (
       <div className="App">
           <Header />
-        <Switch>
-            <Route path='/' exact render={() => {
-                return <Home
-                    totalAmount={this.state.totalAmount}
-                    currentAmount={this.state.currentAmount}
-                    progressPercent={this.state.progressPercent}
-                />
-            }} />
-        <Route path="/products/new" exact render={() => {
-           return <ProductNew parentState={this.state} handler={this.addProductHandler.bind(this)}/>
-        }} />
+          <CategoriesProvider>
+          <ProductsProvider>
+                <Switch>
+                    <Route path='/' exact render={() => (
+                        <ProductsContext.Consumer>
+                            { props => <Home {...props} />}
+                        </ProductsContext.Consumer>
+                    )} />
+                <Route path="/products/new" exact render={() => (
+                    <CategoriesContext.Consumer>
+                        { cProps => (
+                            <ProductsContext.Consumer>
+                                {(props) => <ProductNew handler={props.addHandler} categories={cProps.categories} fetch={cProps.fetch}/>}
+                            </ProductsContext.Consumer>
+                        )}
+                    </CategoriesContext.Consumer>
+                    )} />
 
-            <Route path="/categories/new" exact render={() => (
-                <CategoryNew handler={this.addCategoryHandler.bind(this)}/>
-            )} />
+                    <Route path="/categories/new" exact render={() => (
+                        <CategoriesContext.Consumer>
+                            { props => <CategoryNew handler={props.addHandler}/> }
+                        </CategoriesContext.Consumer>
+                    )} />
 
-        <Route path="/products/:id/edit" exact render={() => (
-            <ProductNew handler={this.editProductHandler.bind(this)} products={this.state.products} />
-        )} />
+                <Route path="/products/:id/edit" exact render={() => (
+                    <CategoriesContext.Consumer>
+                        { cProps => (
+                            <ProductsContext.Consumer>
+                                {(props) => <ProductNew handler={props.editHandler} categories={cProps.categories} fetch={cProps.fetch}/>}
+                            </ProductsContext.Consumer>
+                        )}
+                    </CategoriesContext.Consumer>
+                )} />
 
-            <Route path="/categories/:id/edit" exact render={() => (
-                <CategoryNew handler={this.editCategoryHandler.bind(this)} products={this.state.categories} />
-            )} />
+                    <Route path="/categories/:id/edit" exact render={() => (
+                        <CategoriesContext.Consumer>
+                            { props => <CategoryNew handler={props.editHandler} /> }
+                        </CategoriesContext.Consumer>
+                    )} />
 
-        <Route path="/products" exact render={() => {
-          return <ProductList
-              progressPercent={this.state.progressPercent}
-              totalAmount={this.state.totalAmount}
-              currentAmount={this.state.currentAmount}
-              currentPage={this.state.currentProductPage}
-              totalPages={this.state.totalProductPages}
-              pageHandler={this.pageProductHandler.bind(this)}
-              removeHandler={this.removeProductHandler.bind(this)}
-              products={this.state.products}/>
-        }} />
+                <Route path="/products" exact render={() => (
+                    <ProductsContext.Consumer>
+                            {(props) => <ProductList {...props} />}
+                    </ProductsContext.Consumer>
+                )} />
 
-            <Route path="/categories" exact render={() => {
-                return <CategoryList
-                    currentPage={this.state.currentCategoryPage}
-                    totalPages={this.state.totalCategoryPages}
-                    pageHandler={this.pageCategoryHandler.bind(this)}
-                    removeHandler={this.removeCategoryHandler.bind(this)}
-                    categories={this.state.categories}/>
-            }} />
+                    <Route path="/categories" exact render={() => (
+                        <CategoriesContext.Consumer>
+                            {(props) =>  <CategoryList {...props}/>}
+                        </CategoriesContext.Consumer>
+                    )} />
 
-            <Route path="/products/:id" removeHandler={this.removeProductHandler.bind(this)} component={ProductShow} />
-        </Switch>
-
+                    <Route path="/products/:id" exact render={(props) => (
+                        <ProductsContext.Consumer>
+                            { () => <ProductShow {...props} /> }
+                        </ProductsContext.Consumer>
+                    )} />
+                </Switch>
+          </ProductsProvider>
+          </CategoriesProvider>
       </div>
     );
   }

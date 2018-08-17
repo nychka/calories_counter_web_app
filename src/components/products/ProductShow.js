@@ -5,7 +5,12 @@ import { Card, CardImg, CardText, CardBody,
 
 class ProductShow extends React.Component{
 
+    constructor(props){
+        super(props);
+    }
+
     render(){
+        console.log('hello');
         const product = this.props.location.state.product;
         return(
             <div>

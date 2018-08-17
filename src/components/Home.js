@@ -1,6 +1,7 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import {Jumbotron, NavLink, NavItem} from 'reactstrap';
-import { Circle } from 'rc-progress';
+import { Line } from 'rc-progress';
 
 class Home extends React.Component
 {
@@ -15,9 +16,9 @@ class Home extends React.Component
                     </p>
                     <hr className="my-2" />
                     <h3>Products {this.props.currentAmount } / {this.props.totalAmount}</h3>
-                    <Circle percent={this.props.progressPercent} strokeWidth="1" strokeColor="#2db7f5" />
+                    <Line percent={this.props.progressPercent} strokeWidth="1" strokeColor="#2db7f5" />
                     <hr className="my-2"/>
-                    <NavLink href='/products/new' className='btn btn-success'>
+                    <NavLink tag={Link} to='/products/new' className='btn btn-success'>
                         Add Product
                     </NavLink>
                 </Jumbotron>
