@@ -5,7 +5,6 @@ import ReactPaginate from 'react-paginate';
 import TimeAgo from 'react-timeago'
 
 class CategoryList extends React.Component{
-
     render(){
         return(
             <div className="container productList">

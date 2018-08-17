@@ -1,5 +1,5 @@
 import React from "react";
-import axios from "axios";
+import { axio, API_HOST, defaultHeaders } from "../../utils";
 
 export const CategoriesContext = React.createContext({});
 
@@ -7,7 +7,6 @@ export class CategoriesProvider extends React.Component{
     constructor(props){
         super(props);
         this.state = {
-            api_host: process.env.REACT_APP_API_HOST,
             currentPage: 1,
             totalPages: 0,
             categories: [],
@@ -34,16 +33,16 @@ export class CategoriesProvider extends React.Component{
     fetch = (callback) => {
         console.log('fetching categories...');
         const self = this;
-        axios({
+        axio({
             method: 'get',
-            url: self.state.api_host + '/categories?page='+self.state.currentPage,
-            config: { headers: {'Content-Type': 'json' }}
+            url: '/categories?page='+self.state.currentPage,
+            headers: defaultHeaders()
         })
             .then(function (response) {
                 console.log(response);
                 self.setState({categories: response.data.categories});
                 self.setState({totalPages: response.data.meta.totalPages});
-                callback.call(this, response.data.categories);
+                if(callback) callback.call(this, response.data.categories);
             })
             .catch(function (response) {
                 console.log(response);
@@ -73,25 +72,29 @@ export class CategoriesProvider extends React.Component{
 
     removeHandler = product => {
         let canRemove = window.confirm('Are you really want to delete this product?');
-        let url = `${this.state.api_host}/categories/${product.id}`;
+        let url = `${API_HOST}/categories/${product.id}`;
         let products = this.state.categories;
         const self = this;
 
         if(canRemove){
-            axios.delete(url)
-                .then((response) => {
-                    products.map((item, i) => {
-                        if(item.id === product.id){
-                            products.splice(i, 1);
-                            self.setState({categories: products});
-                            return false;
-                        }
-                    });
-                    console.log(response);
-                })
-                .catch((response) => {
-                    console.log(response);
-                })
+            axio({
+                method: 'delete',
+                url: url,
+                headers: defaultHeaders()
+            })
+            .then((response) => {
+                products.map((item, i) => {
+                    if(item.id === product.id){
+                        products.splice(i, 1);
+                        self.setState({categories: products});
+                        return false;
+                    }
+                });
+                console.log(response);
+            })
+            .catch((response) => {
+                console.log(response);
+            })
         }else{
             return false;
         }

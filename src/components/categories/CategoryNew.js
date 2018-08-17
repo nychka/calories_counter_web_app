@@ -1,16 +1,15 @@
 import React from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import { Button, Form, FormGroup, Label, Input } from 'reactstrap';
-import axios from 'axios';
 import ImagePicker from '../ImagePicker';
+import {axio, defaultHeaders} from "../../utils";
 
 class CategoryNew extends React.Component{
    state = {
-       api_host: process.env.REACT_APP_API_HOST,
        product: { id: 0, lang: { en: '', ua: '', ru: ''}, image: ''},
        editMode: false,
        suggestions: []
-   }
+   };
 
    pickImageHandler(e){
        let imageUrl = e.target.src;
@@ -22,8 +21,8 @@ class CategoryNew extends React.Component{
    componentDidMount(){
        console.log(this.props.location.state);
        if(this.props.location.state && this.props.location.state.hasOwnProperty('product')){
-           this.setState({product: this.props.location.state.product})
-           this.setState({editMode: true})
+           this.setState({product: this.props.location.state.product});
+           this.setState({editMode: true});
        }
    }
 
@@ -48,36 +47,42 @@ class CategoryNew extends React.Component{
 
 
 
-       axios
-           .get(`${this.state.api_host}/image_search/search?q=${e.target.value}`)
-           .then(response => {
-               self.setState({suggestions: response.data.value});
-               console.log(response)
-           })
-           .catch(response => {
-               console.error(response);
-           })
+       axio({
+           method: 'get',
+           url: `/image_search/search?q=${e.target.value}`,
+           headers: defaultHeaders()
+       })
+       .then(response => {
+           self.setState({suggestions: response.data.value});
+           console.log(response)
+       })
+       .catch(response => {
+           console.error(response);
+       })
 
        if(preparedParams.length){
            let query = `from=${currentLang}&to=${preparedParams.join(',')}`;
 
-           axios
-               .get(`${this.state.api_host}/translates/translate?q=${e.target.value}&${query}`)
-               .then(response => {
-                   console.log(response);
-                   let translations = response.data[0]['translations'];
-                   let product = self.state.product;
-                   translations.map(item => {
-                       let lang = item.to;
-                       if(item.to == 'uk') lang = 'ua';
+           axio({
+             method: 'get',
+             url:  `/translates/translate?q=${e.target.value}&${query}`,
+             headers: defaultHeaders()
+           })
+           .then(response => {
+               console.log(response);
+               let translations = response.data[0]['translations'];
+               let product = self.state.product;
+               translations.forEach(item => {
+                   let lang = item.to;
+                   if(item.to === 'uk') lang = 'ua';
 
-                       product['lang'][lang] = item.text.toLowerCase();
-                   })
-                   self.setState({product: product})
+                   product['lang'][lang] = item.text.toLowerCase();
                })
-               .catch(response => {
-                   console.error(response);
-               })
+               self.setState({product: product})
+           })
+           .catch(response => {
+               console.error(response);
+           })
        }
 
    }
@@ -119,13 +124,13 @@ class CategoryNew extends React.Component{
 
         const handler = this.props.handler;
         const history = this.props.history;
-        let url = this.state.api_host + '/categories';
+        let url = '/categories';
         url += this.state.editMode ? ('/' + this.state.product.id) : '';
-        axios({
+        axio({
             method: method,
             url: url,
             data: formData,
-            config: { headers: {'Content-Type': 'json' }}
+            headers: defaultHeaders()
         })
         .then(function (response) {
             console.log(response.data);

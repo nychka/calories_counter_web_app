@@ -6,7 +6,6 @@ import TimeAgo from 'react-timeago'
 import { Line } from 'rc-progress';
 
 class ProductList extends React.Component{
-
     render(){
         return(
             <div className="container productList">
