@@ -1,5 +1,5 @@
 import React from "react";
-import {axio, defaultHeaders, history} from "../../utils";
+import {axio, defaultHeaders, history, userSignedIn} from "../../utils";
 
 export const ProductsContext = React.createContext({});
 
@@ -23,7 +23,7 @@ export class ProductsProvider extends React.Component{
     }
 
     componentDidMount(){
-        this.fetch();
+        userSignedIn() ? this.fetch() : console.info('did not fetch');
         console.log('products provider did mount');
     }
 

@@ -1,5 +1,5 @@
 import React from "react";
-import { axio, API_HOST, defaultHeaders } from "../../utils";
+import { axio, API_HOST, defaultHeaders, userSignedIn } from "../../utils";
 
 export const CategoriesContext = React.createContext({});
 
@@ -21,7 +21,7 @@ export class CategoriesProvider extends React.Component{
     }
 
     componentDidMount(){
-        this.fetch();
+        userSignedIn() ? this.fetch() : console.info('categories did not fetch');
         console.log('categories provider did mount');
     }
 

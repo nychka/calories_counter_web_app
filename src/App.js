@@ -51,7 +51,7 @@ class App extends React.Component {
                             { props => <Home {...props} />}
                         </ProductsContext.Consumer>
                     )} />
-                <Route path="/products/new" exact render={() => (
+                <Route path="/products/new" exact render={() => ( userSignedIn() ?
                     <CategoriesContext.Consumer>
                         { cProps => (
                             <ProductsContext.Consumer>
@@ -59,15 +59,16 @@ class App extends React.Component {
                             </ProductsContext.Consumer>
                         )}
                     </CategoriesContext.Consumer>
-                    )} />
 
-                    <Route path="/categories/new" exact render={() => (
+                    : <Redirect to={'/'}/>)} />
+
+                    <Route path="/categories/new" exact render={() => ( userSignedIn() ?
                         <CategoriesContext.Consumer>
                             { props => <CategoryNew handler={props.addHandler}/> }
                         </CategoriesContext.Consumer>
-                    )} />
+                    : <Redirect to={'/'}/> )} />
 
-                <Route path="/products/:id/edit" exact render={() => (
+                <Route path="/products/:id/edit" exact render={() => ( userSignedIn() ?
                     <CategoriesContext.Consumer>
                         { cProps => (
                             <ProductsContext.Consumer>
@@ -75,31 +76,31 @@ class App extends React.Component {
                             </ProductsContext.Consumer>
                         )}
                     </CategoriesContext.Consumer>
-                )} />
+                    : <Redirect to={'/'}/> )} />
 
-                    <Route path="/categories/:id/edit" exact render={() => (
+                    <Route path="/categories/:id/edit" exact render={() => ( userSignedIn() ?
                         <CategoriesContext.Consumer>
                             { props => <CategoryNew handler={props.editHandler} /> }
                         </CategoriesContext.Consumer>
-                    )} />
+                        : <Redirect to={'/'}/> )} />
 
-                <Route path="/products" exact render={() => (
+                <Route path="/products" exact render={() => ( userSignedIn() ?
                     <ProductsContext.Consumer>
                             {(props) => <ProductList {...props} />}
                     </ProductsContext.Consumer>
-                )} />
+                : <Redirect to={'/'}/>)} />
 
-                    <Route path="/categories" exact render={() => (
+                    <Route path="/categories" exact render={() => ( userSignedIn() ?
                         <CategoriesContext.Consumer>
                             {(props) =>  <CategoryList {...props}/>}
                         </CategoriesContext.Consumer>
-                    )} />
+                    : <Redirect to={'/'}/> )} />
 
-                    <Route path="/products/:id" exact render={(props) => (
+                    <Route path="/products/:id" exact render={(props) => (  userSignedIn() ?
                         <ProductsContext.Consumer>
                             { () => <ProductShow {...props} /> }
                         </ProductsContext.Consumer>
-                    )} />
+                        : <Redirect to={'/'}/> )} />
                 </Switch>
           </ProductsProvider>
           </CategoriesProvider>
