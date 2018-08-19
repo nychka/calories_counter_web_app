@@ -1,5 +1,5 @@
 {
-  "name": "calories_admin",
+  "name": "calories_web_app",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -16,6 +16,7 @@
     "react-router-dom": "^4.3.1",
     "react-scripts": "1.1.4",
     "react-select": "^2.0.0",
+    "react-select-fast-filter-options": "^0.2.3",
     "react-timeago": "^4.1.9",
     "react-validate-form": "^1.0.6",
     "reactstrap": "^6.3.0"

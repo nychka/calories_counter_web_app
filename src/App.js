@@ -25,9 +25,13 @@ class App extends React.Component {
   render() {
     return (
       <div className="App">
-          <Header />
           <CategoriesProvider>
           <ProductsProvider>
+              <ProductsContext.Consumer>
+                  { props => (
+                      <Header {...props} />
+                  )}
+              </ProductsContext.Consumer>
                 <Switch>
                     <Route path='/me' exact render={() => userSignedIn() ? <Profile /> : <Redirect to={'/'} /> } />
                     <Route path='/logout' exact render={() => userSignedIn() ? <Logout /> : <Redirect to={'/'}/> } />

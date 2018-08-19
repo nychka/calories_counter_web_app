@@ -1,37 +1,71 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import {
-    Collapse,
-    Navbar,
-    NavbarToggler,
-    NavbarBrand,
-    Nav,
-    NavItem,
-    NavLink,
-    ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem
-  } from 'reactstrap';
-import { userSignedIn, currentUser } from "../utils";
+import { Line } from 'rc-progress';
+import { Navbar, NavbarBrand, FormGroup} from 'reactstrap';
+import Creatable from 'react-select/lib/Creatable';
+import {userSignedIn, currentUser, axio, history, defaultHeaders, isValidNewOption} from "../utils";
 
 class Header extends React.Component
 {
-    state = {
-        dropdownOpen: false
-    };
-
     constructor(props) {
         super(props);
 
-        this.toggle = this.toggle.bind(this);
-        this.siteName = 'Calories Counter Admin';
+        this.siteName = 'Calories Counter';
         this.state = {
-            isOpen: false
+            isOpen: false,
+            progressPercent: 25,
+            productsOptions: [],
+            selectedProduct: {value: '', label: ''},
+            style: {
+                fontWeight: 'bold',
+                fontSize: 'large'
+            },
+            selectKey: 0
         };
     }
-    dropdownToggle() {
-        this.setState({ dropdownOpen: !this.state.dropdownOpen });
+
+    getProducts(){
+        const self = this;
+        if(this.state.productsOptions.length) return this.state.productsOptions;
+
+        return axio({
+            method: 'get',
+            url: '/products',
+            headers: defaultHeaders()
+        })
+        .then(function (response) {
+            console.log(response);
+            const options = response.data.products.map(product => {
+                const label = <span><img width={'48px'} height={'48px'} src={product.image} />{product.lang.en}</span>;
+                return {value: product.lang.en, label: label}
+            });
+            self.setState((prevState) => {
+                console.log('changing state');
+                return { productsOptions: options };//, selectKey: prevState.selectKey + 1 };
+            });
+            console.log('get products...done!');
+            return options;
+        })
+        .catch(function (response) {
+            console.log(response);
+            history.push({
+                pathname: '/logout',
+                state: { error: '401' }
+            });
+        });
     }
-    toggle() {
-        this.setState({ isOpen: !this.state.isOpen });
+
+    componentDidMount(){
+        console.log('get products...');
+       this.getProducts();
+    }
+
+    pickProductHandler(selected){
+        console.log(selected);
+        this.setState({selectedProduct: selected});
+    }
+    handleCreate(){
+        console.log('create here');
     }
 
     render(){
@@ -39,41 +73,21 @@ class Header extends React.Component
             <div>
                 <Navbar color="light" light expand="md" className="">
                     <NavbarBrand tag={Link} to="/">{ this.siteName }</NavbarBrand>
-                    <NavbarToggler onClick={this.toggle} />
-                    { userSignedIn() ?
-                    <Collapse isOpen={this.state.isOpen} navbar>
-                        <Nav className="" navbar>
-                            <NavItem>
-                                <NavLink tag={Link} className="btn btn-default" to="/products/new">New Product</NavLink>
-                            </NavItem>
-
-                            <NavItem>
-                                <NavLink tag={Link} className="btn btn-default" to="/categories/new">New Category</NavLink>
-                            </NavItem>
-                            <NavItem>
-                                <NavLink tag={Link} to="/products">Products</NavLink>
-                            </NavItem>
-                            <NavItem>
-                                <NavLink tag={Link} to="/categories">Categories</NavLink>
-                            </NavItem>
-                        </Nav>
-                        <Nav className='ml-md-auto'>
-                            <NavItem>
-                                <ButtonDropdown isOpen={this.state.dropdownOpen} toggle={this.dropdownToggle.bind(this)}>
-                                    <DropdownToggle caret>
-                                        { currentUser().email }
-                                    </DropdownToggle>
-                                    <DropdownMenu>
-                                        <DropdownItem disabled><NavLink tag={Link} to={'/me'}>Profile</NavLink></DropdownItem>
-                                        <DropdownItem divider />
-                                        <DropdownItem><NavLink tag={Link} to={'/logout'}>Log out</NavLink></DropdownItem>
-                                    </DropdownMenu>
-                                </ButtonDropdown>
-                            </NavItem>
-                        </Nav>
-                    </Collapse>
-                    : '' }
+                    <span style={this.state.style}>256 / 1500</span>
                 </Navbar>
+                <Line percent={this.state.progressPercent} strokeWidth="1" strokeColor="#2db7f5" />
+                <FormGroup row>
+                    <Creatable
+                        value={this.state.selectedProduct}
+                        onChange={this.pickProductHandler.bind(this)}
+                        options={this.state.productsOptions}
+                        className={'form-control'}
+                        onCreateOption={this.handleCreate}
+                        isSearchable
+                        isClearable
+                        isValidNewOption={isValidNewOption}
+                    />
+                </FormGroup>
             </div>
         );
     }

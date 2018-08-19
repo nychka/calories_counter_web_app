@@ -23,7 +23,7 @@ export class ProductsProvider extends React.Component{
     }
 
     componentDidMount(){
-        userSignedIn() ? this.fetch() : console.info('did not fetch');
+        this.fetch();
         console.log('products provider did mount');
     }
 

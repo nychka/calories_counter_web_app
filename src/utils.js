@@ -44,3 +44,16 @@ axio.interceptors.response.use(response => {
     }
     return error.response;
 });
+
+// redefine function for react-select for searching
+export const isValidNewOption = (inputValue, selectValue, selectOptions) => {
+    var compareOption = function compareOption(inputValue, option) {
+        var candidate = inputValue.toLowerCase();
+        return option.value.toLowerCase() === candidate;
+    };
+    return !(!inputValue || selectValue.some(function (option) {
+        return compareOption(inputValue, option);
+    }) || selectOptions.some(function (option) {
+        return compareOption(inputValue, option);
+    }));
+};
