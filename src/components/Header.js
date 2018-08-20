@@ -15,7 +15,7 @@ class Header extends React.Component
             isOpen: false,
             progressPercent: 25,
             productsOptions: [],
-            selectedProduct: {value: '', label: ''},
+            selectedProduct: {value: '', label: <span>Type product title here...</span>},
             style: {
                 fontWeight: 'bold',
                 fontSize: 'large'
@@ -62,20 +62,23 @@ class Header extends React.Component
 
     pickProductHandler(selected){
         console.log(selected);
-        this.setState({selectedProduct: selected});
+        //this.setState({selectedProduct: selected});
+        this.props.addCalories(selected);
     }
+
     handleCreate(){
         console.log('create here');
     }
 
     render(){
+        const progress = this.props.consumedCalories / (this.props.caloriesLimit / 100);
         return(
             <div>
                 <Navbar color="light" light expand="md" className="">
                     <NavbarBrand tag={Link} to="/">{ this.siteName }</NavbarBrand>
-                    <span style={this.state.style}>256 / 1500</span>
+                    <span style={this.state.style}>{this.props.consumedCalories} / {this.props.caloriesLimit}</span>
                 </Navbar>
-                <Line percent={this.state.progressPercent} strokeWidth="1" strokeColor="#2db7f5" />
+                <Line percent={progress} strokeWidth="1" strokeColor="#2db7f5" />
                 <FormGroup row>
                     <Creatable
                         value={this.state.selectedProduct}
@@ -84,8 +87,8 @@ class Header extends React.Component
                         className={'form-control'}
                         onCreateOption={this.handleCreate}
                         isSearchable
-                        isClearable
                         isValidNewOption={isValidNewOption}
+                        placeholder={'Search product'}
                     />
                 </FormGroup>
             </div>

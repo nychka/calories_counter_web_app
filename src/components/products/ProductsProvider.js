@@ -11,13 +11,17 @@ export class ProductsProvider extends React.Component{
             totalPages: 0,
             currentAmount: 0,
             totalAmount: 100,
+            caloriesLimit: 2000,
             products: [],
+            consumedProducts: [],
+            consumedCalories: 0,
             pageHandler: this.pageHandler.bind(this),
             fetch: this.fetch.bind(this),
             addHandler: this.addHandler.bind(this),
             editHandler: this.editHandler.bind(this),
             removeHandler: this.removeHandler.bind(this),
-            showHandler: this.showHandler.bind(this)
+            showHandler: this.showHandler.bind(this),
+            addCalories: this.addCalories.bind(this)
         }
         console.log('Products Provider constructor');
     }
@@ -25,6 +29,25 @@ export class ProductsProvider extends React.Component{
     componentDidMount(){
         this.fetch();
         console.log('products provider did mount');
+    }
+
+    addCalories(selected){
+        console.log('add calories ', selected);
+        const product = this.findProductByValue(selected.value);
+        console.log('product', product);
+        this.setState((prevState) => {
+            const consumedProducts = prevState.consumedProducts;
+            let consumedCalories = 0;
+            consumedProducts.push(product);
+
+            consumedProducts.map(product => (consumedCalories += parseInt(product.nutrition.calories)));
+            console.log('consumed products: ', consumedProducts, consumedCalories);
+            return { consumedProducts: consumedProducts, consumedCalories: consumedCalories }
+        });
+    }
+
+    findProductByValue(value){
+        return this.state.products.find(product => product.lang.en === value);
     }
 
     pageHandler = e => {
