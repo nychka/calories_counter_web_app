@@ -13,6 +13,7 @@ export class ProductsProvider extends React.Component{
             totalAmount: 100,
             caloriesLimit: 2000,
             products: [],
+            productsOptions: [],
             consumedProducts: [],
             consumedCalories: 0,
             pageHandler: this.pageHandler.bind(this),
@@ -21,7 +22,8 @@ export class ProductsProvider extends React.Component{
             editHandler: this.editHandler.bind(this),
             removeHandler: this.removeHandler.bind(this),
             showHandler: this.showHandler.bind(this),
-            addCalories: this.addCalories.bind(this)
+            addCalories: this.addCalories.bind(this),
+            findProductByValue: this.findProductByValue.bind(this)
         }
         console.log('Products Provider constructor');
     }
@@ -31,9 +33,7 @@ export class ProductsProvider extends React.Component{
         console.log('products provider did mount');
     }
 
-    addCalories(selected){
-        console.log('add calories ', selected);
-        const product = this.findProductByValue(selected.value);
+    addCalories(product){
         console.log('product', product);
         this.setState((prevState) => {
             const consumedProducts = prevState.consumedProducts;
@@ -44,6 +44,7 @@ export class ProductsProvider extends React.Component{
             console.log('consumed products: ', consumedProducts, consumedCalories);
             return { consumedProducts: consumedProducts, consumedCalories: consumedCalories }
         });
+        history.push('/');
     }
 
     findProductByValue(value){
@@ -56,8 +57,13 @@ export class ProductsProvider extends React.Component{
     }
 
     fetch(){
+        if(this.state.products.length) {
+            console.info('RESOLVE products');
+            return Promise.resolve(this.state.products);
+        }
+
         const self = this;
-        axio({
+        return axio({
             method: 'get',
             url: '/products?page='+self.state.currentPage,
             headers: defaultHeaders()
@@ -67,6 +73,18 @@ export class ProductsProvider extends React.Component{
                 self.setState({products: response.data.products});
                 self.setState({totalPages: response.data.meta.totalPages});
                 self.setProgress(response.data.meta.total);
+                console.log('get products...done!');
+
+                const options = response.data.products.map(product => {
+                    const label = <span><img width={'48px'} height={'48px'} src={product.image} />{product.lang.en}</span>;
+                    return {value: product.lang.en, label: label}
+                });
+                self.setState((prevState) => {
+                    console.log('changing state productsOptions');
+                    return { productsOptions: options };
+                });
+
+                return response.data.products;
             })
             .catch(function (response) {
                 console.log(response);

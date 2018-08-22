@@ -14,7 +14,6 @@ class Header extends React.Component
         this.state = {
             isOpen: false,
             progressPercent: 25,
-            productsOptions: [],
             selectedProduct: {value: '', label: <span>Type product title here...</span>},
             style: {
                 fontWeight: 'bold',
@@ -24,46 +23,20 @@ class Header extends React.Component
         };
     }
 
-    getProducts(){
-        const self = this;
-        if(this.state.productsOptions.length) return this.state.productsOptions;
-
-        return axio({
-            method: 'get',
-            url: '/products',
-            headers: defaultHeaders()
-        })
-        .then(function (response) {
-            console.log(response);
-            const options = response.data.products.map(product => {
-                const label = <span><img width={'48px'} height={'48px'} src={product.image} />{product.lang.en}</span>;
-                return {value: product.lang.en, label: label}
-            });
-            self.setState((prevState) => {
-                console.log('changing state');
-                return { productsOptions: options };//, selectKey: prevState.selectKey + 1 };
-            });
-            console.log('get products...done!');
-            return options;
-        })
-        .catch(function (response) {
-            console.log(response);
-            history.push({
-                pathname: '/logout',
-                state: { error: '401' }
-            });
-        });
-    }
-
     componentDidMount(){
+        const self = this;
         console.log('get products...');
-       this.getProducts();
+       // this.props.fetch()
+       //     .then(products => {
+       //         console.log('products fetched in ProductsProvider!', products.length);
+       //      });
     }
 
     pickProductHandler(selected){
         console.log(selected);
         //this.setState({selectedProduct: selected});
-        this.props.addCalories(selected);
+        //this.props.addCalories(selected);
+        history.push({pathname: '/products/' + selected.value});
     }
 
     handleCreate(){
@@ -83,7 +56,7 @@ class Header extends React.Component
                     <Creatable
                         value={this.state.selectedProduct}
                         onChange={this.pickProductHandler.bind(this)}
-                        options={this.state.productsOptions}
+                        options={this.props.productsOptions}
                         className={'form-control'}
                         onCreateOption={this.handleCreate}
                         isSearchable
