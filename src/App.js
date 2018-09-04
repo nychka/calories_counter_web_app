@@ -16,14 +16,56 @@ import CategoryNew from './components/categories/CategoryNew';
 import Login from './components/Login';
 import Logout from './components/Logout';
 import Profile from './components/Profile';
+import FacebookLogin from 'react-facebook-login';
+import GoogleLogin from 'react-google-login'
 
 import CaloriesNew from './components/CaloriesNew';
-import { userSignedIn } from './utils';
+import {axio, defaultHeaders, saveCurrentUser, userSignedIn} from './utils';
 
 
 
 class App extends React.Component {
 
+    failGoogle(response){
+        console.log(response);
+    }
+
+    responseGoogle(response){
+        console.log(response);
+        this.signIn(response.accessToken, 'google');
+    }
+    responseFacebook(response){
+        console.log(response);
+        this.signIn(response.accessToken, 'facebook');
+    }
+
+
+    componentClicked(e){
+        console.log(e);
+    }
+    signIn(accessToken, provider){
+
+        axio({
+            method: 'post',
+            url: '/users/sign_in',
+            data: { access_token: accessToken, provider: provider },
+            headers: defaultHeaders()
+        })
+        .then(function (response) {
+            console.log(response);
+            if(response.status === 201) {
+                alert(response.data.email + ' logged in!');
+                //saveCurrentUser(response.data, response.headers.authorization);
+                //history.push({pathname: '/'});
+            }else{
+                //self.setState({ hasError: true, errorMessage: response.data.error })
+            }
+        })
+        .catch(function (response) {
+            console.log(response);
+
+        });
+    }
   render() {
     return (
       <div className="App">
@@ -47,10 +89,23 @@ class App extends React.Component {
                             { cProps => (
                                 <ProductsContext.Consumer>
                                     { props => (
-                                        !userSignedIn() ? <Login
-                                            fetchProducts={props.fetch}
-                                            fetchCategories={cProps.fetch}
-                                        /> : <Redirect to={'/'}/>
+                                        <div>
+                                           <FacebookLogin
+                                               appId="1816374385077661"
+                                               autoLoad={false}
+                                               fields="name,email,picture"
+                                               onClick={this.componentClicked.bind(this)}
+                                               callback={this.responseFacebook.bind(this)}
+                                           />
+
+                                            <GoogleLogin
+                                                clientId="930732790033-lirk2bn8esigr142rucgm86gqsifeum7.apps.googleusercontent.com"
+                                                buttonText="Login"
+                                                autoLoad={false}
+                                                onSuccess={this.responseGoogle.bind(this)}
+                                                onFailure={this.failGoogle.bind(this)}
+                                            />
+                                        </div>
                                     )}
                                 </ProductsContext.Consumer>
                             )}
