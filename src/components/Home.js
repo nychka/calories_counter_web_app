@@ -1,14 +1,8 @@
 import React, {Fragment} from 'react';
 import ProductCard from './products/ProductCard';
 import { Row, Col } from 'reactstrap';
-import { Link } from 'react-router-dom';
-import {Jumbotron, NavLink } from 'reactstrap';
-import { Line } from 'rc-progress';
-import { userSignedIn } from "../utils";
-import Login from './Login';
-import { CategoriesContext} from "./categories/CategoriesProvider";
-import { ProductsContext} from "./products/ProductsProvider";
-
+import {isValidNewOption} from "../utils";
+import Creatable from "react-select/lib/Creatable";
 
 class Home extends React.Component
 {
@@ -20,6 +14,16 @@ class Home extends React.Component
         const consumedProducts = this.props.consumedProducts;
         return(
             <div className='container ml-md-auto'>
+            <Creatable
+                value={this.props.selectedProduct}
+                onChange={this.props.pickProductHandler}
+                options={this.props.productsOptions}
+                className={''}
+                onCreateOption={this.props.handleCreate}
+                isSearchable
+                isValidNewOption={isValidNewOption}
+                placeholder={'Search product'}
+            />
                 <Row>
                 { consumedProducts.length ?
                     consumedProducts.map(product => (

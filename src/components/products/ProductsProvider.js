@@ -16,6 +16,7 @@ export class ProductsProvider extends React.Component{
             productsOptions: [],
             consumedProducts: [],
             consumedCalories: 0,
+            selectedProduct: {value: '', label: <span>Type product title here...</span>},
             pageHandler: this.pageHandler.bind(this),
             fetch: this.fetch.bind(this),
             addHandler: this.addHandler.bind(this),
@@ -23,7 +24,9 @@ export class ProductsProvider extends React.Component{
             removeHandler: this.removeHandler.bind(this),
             showHandler: this.showHandler.bind(this),
             addCalories: this.addCalories.bind(this),
-            findProductByValue: this.findProductByValue.bind(this)
+            findProductByValue: this.findProductByValue.bind(this),
+            pickProductHandler: this.pickProductHandler.bind(this),
+            handleCreate: this.handleCreate.bind(this)
         }
         console.log('Products Provider constructor');
     }
@@ -31,6 +34,17 @@ export class ProductsProvider extends React.Component{
     componentDidMount(){
         this.fetch();
         console.log('products provider did mount');
+    }
+
+    pickProductHandler(selected){
+        console.log(selected);
+        //this.setState({selectedProduct: selected});
+        //this.props.addCalories(selected);
+        history.push({pathname: '/products/' + selected.value});
+    }
+
+    handleCreate(){
+        console.log('create here');
     }
 
     addCalories(product){
