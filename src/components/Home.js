@@ -13,8 +13,8 @@ class Home extends React.Component
     render(){
         const consumedProducts = this.props.consumedProducts;
         return(
-            <div className='container ml-md-auto'>
-            <Creatable
+            <div className='d-flex flex-column'>
+                <Creatable
                 value={this.props.selectedProduct}
                 onChange={this.props.pickProductHandler}
                 options={this.props.productsOptions}
@@ -24,15 +24,11 @@ class Home extends React.Component
                 isValidNewOption={isValidNewOption}
                 placeholder={'Search product'}
             />
-                <Row>
+                <div className={'d-flex flex-wrap align-items-end mt-3'}>
                 { consumedProducts.length ?
-                    consumedProducts.map(product => (
-                        <Col key={product.id}>
-                            <ProductCard product={product}/>
-                        </Col>
-                            ))
+                    consumedProducts.map(product => <ProductCard product={product}/>)
                     : <h3>No consumed products</h3> }
-                </Row>
+                </div>
             </div>
         );
     }

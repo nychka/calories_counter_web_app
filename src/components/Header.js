@@ -11,14 +11,14 @@ class Header extends React.Component
         this.siteName = 'Calories Counter';
         this.state = {
             isOpen: false,
-            progressPercent: 25
+            progressPercent: 0
         };
     }
 
     render(){
         const progress = this.props.consumedCalories / (this.props.caloriesLimit / 100);
         return(
-            <div>
+            <div className={'mb-3'}>
                 <Navbar className="">
                     <Link tag={Link} to="/">
                         <div className='brand d-flex justify-content-left'>{ this.siteName }</div>
@@ -26,7 +26,7 @@ class Header extends React.Component
                     <div className={'d-flex justify-content-center brand'}>{this.props.consumedCalories} / {this.props.caloriesLimit}</div>
                     <div className={'d-flex justify-content-right'}>Sign in</div>
                 </Navbar>
-                <Line percent={66} strokeWidth="0.3" strokeColor="#42d8d8" />
+                <Line percent={progress} strokeWidth="0.3" strokeColor="#42d8d8" />
             </div>
         );
     }
