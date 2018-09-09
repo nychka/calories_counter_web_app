@@ -26,7 +26,7 @@ class Header extends React.Component
                     <div className={'d-flex justify-content-center brand'}>{this.props.consumedCalories} / {this.props.caloriesLimit}</div>
                     <div className={'d-flex justify-content-right'}>Sign in</div>
                 </Navbar>
-                <Line percent={progress} strokeWidth="0.3" strokeColor="#42d8d8" />
+                <Line percent={progress} className={'rounded'} strokeWidth="0.4" strokeColor="#42d8d8" />
             </div>
         );
     }

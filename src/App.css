@@ -35,3 +35,60 @@
   font-family: Arial;
   font-size: 1rem;
 }
+
+.meal-new {
+  width: 557px;
+  border: 1px solid #ccc;
+  margin: auto;
+  margin-top: 10rem;
+  background-color: #e9ecef;
+}
+
+.meal-new-top{
+  width: 14rem;
+  height: 14rem;
+  margin-top: -7rem;
+  box-shadow: 0px 5px 10px #cccccc;
+  border-radius: 25px;
+}
+
+.meal-new-top img {
+  width: 100%;
+  height: 100%;
+  border-radius: 25px;
+  border: 1px solid #e9ecef;
+}
+
+.meal-new-title {
+  font-family: Arial;
+  font-size: 69px;
+  font-weight: bold;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: 0.22;
+  letter-spacing: normal;
+  text-align: center;
+  color: #1c0c0c
+}
+
+.meal-new-bottom {
+  background-color: #42d8d8;
+  box-shadow: 0px -4px 8px #ccc;
+  color: #ffffff;
+  font-size: 3rem;
+  text-align: center;
+  width: 100%;
+}
+
+.meal-new-bottom:hover {
+  cursor: pointer;
+}
+
+.meal-new-square {
+  width: 242px;
+  height: 121px;
+  border: 1px solid #cccccc;
+  font-size: 3rem;
+  text-align: center;
+  margin: auto;
+}
