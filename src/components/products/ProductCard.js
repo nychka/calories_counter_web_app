@@ -4,26 +4,19 @@ import { Card, CardImg, CardTitle, CardSubtitle, CardBody, Button} from 'reactst
 class ProductCard extends React.Component{
     constructor(props){
         super(props);
-        this.state = {
-            style: {
-                width: '120px',
-                border: '1px',
-                margin: '5px'
-            }
-        }
     }
 
     render(){
         const product = this.props.product;
         return(
-            <Card style={this.state.style}>
-                <CardImg top src={product.image} alt="Card image cap" />
-                <CardBody>
-                    <CardTitle>{product.lang.en}</CardTitle>
-                    <CardSubtitle>{product.nutrition.calories}</CardSubtitle>
-                    <Button>Button</Button>
-                </CardBody>
-            </Card>
+            <div key={product.id} className={'d-flex flex-column justify-content-center align-items-end mr-5 mb-5 product-card'}>
+                <div className={'d-flex flex-row mt-auto product-card-body'}>
+                    <img src={product.image} alt="Card image cap" />
+                </div>
+                <div className={'d-flex flex-row product-card-bottom mt-auto align-self-stretch justify-content-center align-items-center'}>
+                    {product.nutrition.calories} kkal
+                    </div>
+            </div>
         )
     }
 };

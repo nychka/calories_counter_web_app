@@ -1,14 +1,8 @@
 import React, {Fragment} from 'react';
 import ProductCard from './products/ProductCard';
 import { Row, Col } from 'reactstrap';
-import { Link } from 'react-router-dom';
-import {Jumbotron, NavLink } from 'reactstrap';
-import { Line } from 'rc-progress';
-import { userSignedIn } from "../utils";
-import Login from './Login';
-import { CategoriesContext} from "./categories/CategoriesProvider";
-import { ProductsContext} from "./products/ProductsProvider";
-
+import {isValidNewOption} from "../utils";
+import Creatable from "react-select/lib/Creatable";
 
 class Home extends React.Component
 {
@@ -19,16 +13,22 @@ class Home extends React.Component
     render(){
         const consumedProducts = this.props.consumedProducts;
         return(
-            <div className='container ml-md-auto'>
-                <Row>
+            <div className='d-flex flex-column'>
+                <Creatable
+                value={this.props.selectedProduct}
+                onChange={this.props.pickProductHandler}
+                options={this.props.productsOptions}
+                className={''}
+                onCreateOption={this.props.handleCreate}
+                isSearchable
+                isValidNewOption={isValidNewOption}
+                placeholder={'Search product'}
+            />
+                <div className={'d-flex flex-wrap align-items-end mt-3'}>
                 { consumedProducts.length ?
-                    consumedProducts.map(product => (
-                        <Col key={product.id}>
-                            <ProductCard product={product}/>
-                        </Col>
-                            ))
+                    consumedProducts.map(product => <ProductCard product={product}/>)
                     : <h3>No consumed products</h3> }
-                </Row>
+                </div>
             </div>
         );
     }

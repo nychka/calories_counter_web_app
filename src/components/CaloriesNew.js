@@ -8,26 +8,28 @@ class CaloriesNew extends React.Component{
 
         this.state = {
             product: { image: '', lang: { en: ''}, nutrition: { calories: 0, weight: 100 }},
-            style: {
-                width: '150px',
-                border: '1px',
-                margin: '5px'
-            }
         }
     }
     setCalories(e){
         const product = Object.assign({}, this.state.product);
-        product.nutrition.weight = parseInt(e.target.value);
-        console.log(product.nutrition.calories, '<=== calories set');
+        const updatedWeight = parseInt(e.target.value);
+
+        product.nutrition.calories = updatedWeight ? Math.round(updatedWeight * product.nutrition.ratio) : '';
+        product.nutrition.weight = updatedWeight;
+
         this.setState({ product: product });
     }
 
     calculate(){
         const product = Object.assign({}, this.state.product);
-        const calories = Math.ceil(product.nutrition.calories / 100 * product.nutrition.weight);
-        console.log(calories, '<=== calories calculate');
-        product.nutrition.calories = calories;
-        this.props.addCalories(product);
+        const weight = parseInt(product.nutrition.weight);
+        const calories = parseInt(product.nutrition.calories);
+
+        if(weight && calories){
+            this.props.addCalories(product);
+        }else{
+            alert('Please set correct weight in grams');
+        }
     }
 
     componentDidUpdate(){
@@ -47,8 +49,8 @@ class CaloriesNew extends React.Component{
             const product = self.props.findProductByValue(self.props.match.params.id);
             console.log(product);
             self.setState((prevState) => {
+                product.nutrition.ratio = product.nutrition.calories / 100;
                 console.log('...product has been set', product);
-                product.nutrition.weight = 100;
                 return { product: product };
             });
         })
@@ -62,18 +64,17 @@ class CaloriesNew extends React.Component{
     render(){
         const product = this.state.product;
         return (
-            <Card style={this.state.style}>
-                <CardImg top src={product.image} alt="Card image cap" />
-                <CardBody>
-                    <CardTitle>{product.lang.en}</CardTitle>
-                    <CardSubtitle>
-                        {product.nutrition.calories} kkal /
-                        <Input type='number' onChange={this.setCalories.bind(this)} value={this.state.product.nutrition.weight}/>
-                        gram
-                    </CardSubtitle>
-                    <Button className={'btn btn-primary'} onClick={this.calculate.bind(this)}>Count</Button>
-                </CardBody>
-            </Card>
+            <div className={'d-flex flex-column meal-new '}>
+                <div className={'d-flex flex-row mb-5 align-self-center justify-content-center meal-new-top'}>
+                 <img src={product.image} alt="Card image cap" />
+                </div>
+                <div className={'d-flex flex-row mb-5 align-self-center meal-new-title'}>{product.lang.en}</div>
+                <div className={'d-flex jutify-content-around flex-row mb-5'}>
+                    <Input className={'d-flex flex-column meal-new-square'} type='number' onChange={this.setCalories.bind(this)} value={this.state.product.nutrition.weight}/>
+                    <Input className={'d-flex flex-column meal-new-square'} disabled type='text' value={parseInt(this.state.product.nutrition.calories) ? this.state.product.nutrition.calories + ' kkal' : ':P'}/>
+                </div>
+                <div className={'d-flex justify-content-center meal-new-bottom'} onClick={this.calculate.bind(this)}> + Add</div>
+            </div>
         )
     }
 }
