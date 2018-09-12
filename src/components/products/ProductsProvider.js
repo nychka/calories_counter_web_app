@@ -7,6 +7,8 @@ export const ProductsContext = React.createContext({});
 export class ProductsProvider extends React.Component{
     constructor(props){
         super(props);
+        const consumedProducts = this.getItem('consumedProducts');
+
         this.state = {
             currentPage: 1,
             totalPages: 0,
@@ -15,9 +17,9 @@ export class ProductsProvider extends React.Component{
             caloriesLimit: 2000,
             products: [],
             productsOptions: [],
-            consumedProducts: [],
-            consumedCalories: 0,
             moment: toMomentObject(new Date()),
+            consumedProducts: consumedProducts,
+            consumedCalories: this.countConsumedCalories(consumedProducts),
             selectedProduct: {value: '', label: <span>Type product title here...</span>},
             pageHandler: this.pageHandler.bind(this),
             fetch: this.fetch.bind(this),
@@ -54,6 +56,20 @@ export class ProductsProvider extends React.Component{
         console.log('create here');
     }
 
+    countConsumedCalories = (consumedProducts) => {
+        let consumedCalories = 0;
+        consumedProducts.map(product => (consumedCalories += parseInt(product.nutrition.calories)));
+        return consumedCalories;
+    }
+
+    saveItem = (key, value) => {
+        localStorage.setItem(key, JSON.stringify(value));
+    }
+
+    getItem = (key) => {
+        return JSON.parse(localStorage.getItem(key)) || [];
+    }
+
     addCalories(product){
         console.log('product', product);
         this.setState((prevState) => {
@@ -61,13 +77,13 @@ export class ProductsProvider extends React.Component{
                 console.error('moment is not set! Pick right moment;)');
                 return false;
             }
-
             const consumedProducts = prevState.consumedProducts;
             let consumedCalories = 0;
             product.consumedAt = prevState.moment;
             consumedProducts.push(product);
+            const consumedCalories = this.countConsumedCalories(consumedProducts);
 
-            consumedProducts.map(product => (consumedCalories += parseInt(product.nutrition.calories)));
+            this.saveItem('consumedProducts', consumedProducts);
             console.log('consumed products: ', consumedProducts, consumedCalories);
             return { consumedProducts: consumedProducts, consumedCalories: consumedCalories }
         });
