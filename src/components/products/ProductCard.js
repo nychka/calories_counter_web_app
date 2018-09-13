@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Card, CardImg, CardTitle, CardSubtitle, CardBody, Button} from 'reactstrap';
 
 class ProductCard extends React.Component{

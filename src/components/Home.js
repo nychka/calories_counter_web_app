@@ -14,17 +14,19 @@ class Home extends React.Component
         const consumedProducts = this.props.consumedProducts;
         return(
             <div className='d-flex flex-column'>
-                <Creatable
-                value={this.props.selectedProduct}
-                onChange={this.props.pickProductHandler}
-                options={this.props.productsOptions}
-                className={''}
-                onCreateOption={this.props.handleCreate}
-                isSearchable
-                isValidNewOption={isValidNewOption}
-                placeholder={'Search product'}
-            />
-                <div className={'d-flex flex-wrap align-items-end mt-3'}>
+                <div id={'select-products'}>
+                    <Creatable
+                    value={this.props.selectedProduct}
+                    onChange={this.props.pickProductHandler}
+                    options={this.props.productsOptions}
+                    className={'search-products'}
+                    onCreateOption={this.props.handleCreate}
+                    isSearchable
+                    isValidNewOption={isValidNewOption}
+                    placeholder={'Search product'}
+                   />
+                </div>
+                <div className={'d-flex flex-wrap align-items-end mt-3 consumed-products-wrapper'}>
                 { consumedProducts.length ?
                     consumedProducts.map(product => <ProductCard product={product}/>)
                     : <h3>No consumed products</h3> }
