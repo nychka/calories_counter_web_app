@@ -3,11 +3,18 @@ import ProductCard from './products/ProductCard';
 import { Row, Col } from 'reactstrap';
 import {isValidNewOption} from "../utils";
 import Creatable from "react-select/lib/Creatable";
+import { SingleDatePicker } from 'react-dates';
+import 'react-dates/initialize';
+import 'react-dates/lib/css/_datepicker.css';
 
 class Home extends React.Component
 {
     constructor(props){
         super(props);
+        this.state = {
+            date: null,
+            focused: false
+        }
     }
 
     render(){
@@ -23,6 +30,15 @@ class Home extends React.Component
 
         return(
             <div className='d-flex flex-column'>
+                <div id={'select-date'}>
+                    <SingleDatePicker
+                        date={this.state.date} // momentPropTypes.momentObj or null
+                        onDateChange={date => this.setState({ date })} // PropTypes.func.isRequired
+                        focused={this.state.focused} // PropTypes.bool
+                        onFocusChange={({ focused }) => this.setState({ focused })} // PropTypes.func.isRequired
+                        id="your_unique_id" // PropTypes.string.isRequired,
+                    />
+                </div>
                 <div id={'select-products'}>
                     <Creatable
                     value={this.props.selectedProduct}
