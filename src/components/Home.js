@@ -1,9 +1,9 @@
 import React, {Fragment} from 'react';
 import ProductCard from './products/ProductCard';
-import { Row, Col } from 'reactstrap';
 import {isValidNewOption} from "../utils";
 import Creatable from "react-select/lib/Creatable";
-import { SingleDatePicker } from 'react-dates';
+import { SingleDatePicker, toMomentObject } from 'react-dates';
+import moment from 'moment';
 import 'react-dates/initialize';
 import 'react-dates/lib/css/_datepicker.css';
 
@@ -12,18 +12,17 @@ class Home extends React.Component
     constructor(props){
         super(props);
         this.state = {
-            date: null,
             focused: false
         }
     }
 
     render(){
+        const self = this;
         const consumedProducts = this.props.consumedProducts.filter(product => {
-            const date = this.props.consumedWhen.getTime();
+            const date = self.props.moment.toDate().getTime();
             const consumedAt = new Date(product.consumedAt);
             const start = consumedAt.setHours(0,0,0,0);
             const end = consumedAt.setHours(23,59,59,999);
-            console.log(start, date, end);
 
             return start < date && end > date;
         });
@@ -32,8 +31,8 @@ class Home extends React.Component
             <div className='d-flex flex-column'>
                 <div id={'select-date'}>
                     <SingleDatePicker
-                        date={this.state.date} // momentPropTypes.momentObj or null
-                        onDateChange={date => this.setState({ date })} // PropTypes.func.isRequired
+                        date={this.props.moment} // momentPropTypes.momentObj or null
+                        onDateChange={(date => this.props.pickMoment(date))} // PropTypes.func.isRequired
                         focused={this.state.focused} // PropTypes.bool
                         onFocusChange={({ focused }) => this.setState({ focused })} // PropTypes.func.isRequired
                         id="your_unique_id" // PropTypes.string.isRequired,
@@ -52,8 +51,9 @@ class Home extends React.Component
                    />
                 </div>
                 <div className={'d-flex flex-wrap align-items-end mt-3 consumed-products-wrapper'}>
-                { consumedProducts.length ?
-                    consumedProducts.map(product => <ProductCard product={product}/>)
+                {
+                    consumedProducts.length ?
+                    consumedProducts.map(product => <ProductCard key={product.id} product={product}/>)
                     : <h3>No consumed products</h3> }
                 </div>
             </div>

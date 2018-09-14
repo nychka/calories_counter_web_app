@@ -2,6 +2,7 @@ import React from 'react';
 import { configure, shallow } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import Home from './Home';
+import { toMomentObject } from 'react-dates';
 
 configure({ adapter: new Adapter()});
 
@@ -21,8 +22,10 @@ describe('<Home />', () => {
         return d;
     };
 
+    const todayMoment = () => toMomentObject(new Date());
+
     const subject = (options = {}) => {
-        const defaults = { consumed: [], consumedWhen: new Date() };
+        const defaults = { consumed: [], moment: todayMoment() };
         const settings = Object.assign(defaults, options);
 
         return shallow(
@@ -32,7 +35,7 @@ describe('<Home />', () => {
                 pickProductHandler={() => {}}
                 handleCreate={() => {}}
                 productsOptions={{}}
-                consumedWhen={settings.consumedWhen}
+                moment={settings.moment}
             />
         );
     };
@@ -45,7 +48,6 @@ describe('<Home />', () => {
             let consumedProduct = Object.assign({}, product);
             consumedProduct.consumedAt = time;
             products.push(consumedProduct);
-            //console.log(i, consumedProduct, time);
         }
         return products;
     };
@@ -74,7 +76,7 @@ describe('<Home />', () => {
         const consumedToday = buildConsumedProducts(3, today);
         const consumedYesterday = buildConsumedProducts(2, yesterday);
         const consumedProducts = [...consumedToday, ...consumedYesterday];
-        const wrapper = subject({ consumedWhen: today, consumed: consumedProducts});
+        const wrapper = subject({ moment: toMomentObject(today), consumed: consumedProducts});
 
         expect(wrapper.find(consumedProductsWrapper).children()).toHaveLength(3);
     });
@@ -85,7 +87,7 @@ describe('<Home />', () => {
         const consumedToday = buildConsumedProducts(3, today);
         const consumedYesterday = buildConsumedProducts(4, yesterday);
         const consumedProducts = [...consumedToday, ...consumedYesterday];
-        const wrapper = subject({ consumedWhen: yesterday, consumed: consumedProducts});
+        const wrapper = subject({ moment: toMomentObject(yesterday), consumed: consumedProducts});
 
         expect(wrapper.find(consumedProductsWrapper).children()).toHaveLength(4);
     });
