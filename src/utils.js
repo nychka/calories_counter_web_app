@@ -57,3 +57,12 @@ export const isValidNewOption = (inputValue, selectValue, selectOptions) => {
         return compareOption(inputValue, option);
     }));
 };
+
+export const isRightMoment = (moment, currentMoment) => {
+    const date = currentMoment.toDate().getTime();
+    const consumedAt = moment.toDate();
+    const start = consumedAt.setHours(0,0,0,0);
+    const end = consumedAt.setHours(23,59,59,999);
+
+    return start < date && end > date;
+};

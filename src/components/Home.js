@@ -1,6 +1,6 @@
 import React, {Fragment} from 'react';
 import ProductCard from './products/ProductCard';
-import {isValidNewOption} from "../utils";
+import {isValidNewOption, isRightMoment} from "../utils";
 import Creatable from "react-select/lib/Creatable";
 import { SingleDatePicker, toMomentObject } from 'react-dates';
 import moment from 'moment';
@@ -14,17 +14,15 @@ class Home extends React.Component
         this.state = {
             focused: false
         }
+        this.isRightMoment = (moment) => isRightMoment(moment, this.props.moment);
     }
 
     render(){
+        debugger;
         const self = this;
         const consumedProducts = this.props.consumedProducts.filter(product => {
-            const date = self.props.moment.toDate().getTime();
-            const consumedAt = new Date(product.consumedAt);
-            const start = consumedAt.setHours(0,0,0,0);
-            const end = consumedAt.setHours(23,59,59,999);
-
-            return start < date && end > date;
+            const moment = toMomentObject(new Date(product.consumedAt));
+            return self.isRightMoment(moment);
         });
 
         return(
@@ -38,6 +36,7 @@ class Home extends React.Component
                         id="your_unique_id" // PropTypes.string.isRequired,
                     />
                 </div>
+                { this.isRightMoment(toMomentObject(new Date()), this.props.moment) &&
                 <div id={'select-products'}>
                     <Creatable
                     value={this.props.selectedProduct}
@@ -49,7 +48,7 @@ class Home extends React.Component
                     isValidNewOption={isValidNewOption}
                     placeholder={'Search product'}
                    />
-                </div>
+                </div> }
                 <div className={'d-flex flex-wrap align-items-end mt-3 consumed-products-wrapper'}>
                 {
                     consumedProducts.length ?

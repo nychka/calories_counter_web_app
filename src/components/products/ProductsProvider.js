@@ -1,5 +1,5 @@
 import React from "react";
-import {axio, defaultHeaders, history, userSignedIn} from "../../utils";
+import {axio, defaultHeaders, history, userSignedIn, isRightMoment} from "../../utils";
 import { toMomentObject } from 'react-dates';
 
 export const ProductsContext = React.createContext({});
@@ -29,7 +29,8 @@ export class ProductsProvider extends React.Component{
             findProductByValue: this.findProductByValue.bind(this),
             pickProductHandler: this.pickProductHandler.bind(this),
             handleCreate: this.handleCreate.bind(this),
-            pickMoment: this.pickMoment.bind(this)
+            pickMoment: this.pickMoment.bind(this),
+            isPresentMoment: this.isPresentMoment.bind(this)
         }
         console.log('Products Provider constructor');
     }
@@ -39,14 +40,13 @@ export class ProductsProvider extends React.Component{
         console.log('products provider did mount');
     }
 
+    isPresentMoment = () => isRightMoment(toMomentObject(new Date()), this.state.moment);
+
     pickMoment(date){
         this.setState({moment: date});
     }
 
     pickProductHandler(selected){
-        console.log(selected);
-        //this.setState({selectedProduct: selected});
-        //this.props.addCalories(selected);
         history.push({pathname: '/products/' + selected.value});
     }
 

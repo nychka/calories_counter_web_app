@@ -36,6 +36,7 @@ describe('<Home />', () => {
                 handleCreate={() => {}}
                 productsOptions={{}}
                 moment={settings.moment}
+                
             />
         );
     };

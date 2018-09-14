@@ -7,7 +7,7 @@ class CaloriesNew extends React.Component{
         super(props);
 
         this.state = {
-            product: { image: '', lang: { en: ''}, nutrition: { calories: 0, weight: 100 }},
+            product: { image: '', lang: { en: ''}, nutrition: { calories: 1, weight: 100 }},
             weight: 100
         }
     }
@@ -23,7 +23,7 @@ class CaloriesNew extends React.Component{
 
     calculate(){
         const product = Object.assign({}, this.state.product);
-        const weight = parseInt(product.nutrition.weight);
+        const weight = product.nutrition.hasOwnProperty('weight') ? parseInt(product.nutrition.weight) : 100;
         const calories = parseInt(product.nutrition.calories);
 
         if(weight && calories){
