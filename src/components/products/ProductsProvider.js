@@ -16,6 +16,7 @@ export class ProductsProvider extends React.Component{
             productsOptions: [],
             consumedProducts: [],
             consumedCalories: 0,
+            consumedWhen: new Date(),
             selectedProduct: {value: '', label: <span>Type product title here...</span>},
             pageHandler: this.pageHandler.bind(this),
             fetch: this.fetch.bind(this),
@@ -52,6 +53,7 @@ export class ProductsProvider extends React.Component{
         this.setState((prevState) => {
             const consumedProducts = prevState.consumedProducts;
             let consumedCalories = 0;
+            product.consumedAt = new Date().getTime();
             consumedProducts.push(product);
 
             consumedProducts.map(product => (consumedCalories += parseInt(product.nutrition.calories)));

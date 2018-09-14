@@ -11,7 +11,16 @@ class Home extends React.Component
     }
 
     render(){
-        const consumedProducts = this.props.consumedProducts;
+        const consumedProducts = this.props.consumedProducts.filter(product => {
+            const date = this.props.consumedWhen.getTime();
+            const consumedAt = new Date(product.consumedAt);
+            const start = consumedAt.setHours(0,0,0,0);
+            const end = consumedAt.setHours(23,59,59,999);
+            console.log(start, date, end);
+
+            return start < date && end > date;
+        });
+
         return(
             <div className='d-flex flex-column'>
                 <div id={'select-products'}>
