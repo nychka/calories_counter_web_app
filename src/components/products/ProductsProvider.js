@@ -1,5 +1,6 @@
 import React from "react";
-import {axio, defaultHeaders, history, userSignedIn} from "../../utils";
+import {axio, defaultHeaders, history, userSignedIn, isRightMoment} from "../../utils";
+import { toMomentObject } from 'react-dates';
 
 export const ProductsContext = React.createContext({});
 
@@ -16,6 +17,7 @@ export class ProductsProvider extends React.Component{
             productsOptions: [],
             consumedProducts: [],
             consumedCalories: 0,
+            moment: toMomentObject(new Date()),
             selectedProduct: {value: '', label: <span>Type product title here...</span>},
             pageHandler: this.pageHandler.bind(this),
             fetch: this.fetch.bind(this),
@@ -26,7 +28,9 @@ export class ProductsProvider extends React.Component{
             addCalories: this.addCalories.bind(this),
             findProductByValue: this.findProductByValue.bind(this),
             pickProductHandler: this.pickProductHandler.bind(this),
-            handleCreate: this.handleCreate.bind(this)
+            handleCreate: this.handleCreate.bind(this),
+            pickMoment: this.pickMoment.bind(this),
+            isPresentMoment: this.isPresentMoment.bind(this)
         }
         console.log('Products Provider constructor');
     }
@@ -36,10 +40,13 @@ export class ProductsProvider extends React.Component{
         console.log('products provider did mount');
     }
 
+    isPresentMoment = () => isRightMoment(toMomentObject(new Date()), this.state.moment);
+
+    pickMoment(date){
+        this.setState({moment: date});
+    }
+
     pickProductHandler(selected){
-        console.log(selected);
-        //this.setState({selectedProduct: selected});
-        //this.props.addCalories(selected);
         history.push({pathname: '/products/' + selected.value});
     }
 
@@ -50,8 +57,14 @@ export class ProductsProvider extends React.Component{
     addCalories(product){
         console.log('product', product);
         this.setState((prevState) => {
+            if(!prevState.moment){
+                console.error('moment is not set! Pick right moment;)');
+                return false;
+            }
+
             const consumedProducts = prevState.consumedProducts;
             let consumedCalories = 0;
+            product.consumedAt = prevState.moment;
             consumedProducts.push(product);
 
             consumedProducts.map(product => (consumedCalories += parseInt(product.nutrition.calories)));

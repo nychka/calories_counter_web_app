@@ -7,7 +7,8 @@ class CaloriesNew extends React.Component{
         super(props);
 
         this.state = {
-            product: { image: '', lang: { en: ''}, nutrition: { calories: 0, weight: 100 }},
+            product: { image: '', lang: { en: ''}, nutrition: { calories: 1, weight: 100 }},
+            weight: 100
         }
     }
     setCalories(e){
@@ -17,12 +18,12 @@ class CaloriesNew extends React.Component{
         product.nutrition.calories = updatedWeight ? Math.round(updatedWeight * product.nutrition.ratio) : '';
         product.nutrition.weight = updatedWeight;
 
-        this.setState({ product: product });
+        this.setState({ product: product, weight: updatedWeight });
     }
 
     calculate(){
         const product = Object.assign({}, this.state.product);
-        const weight = parseInt(product.nutrition.weight);
+        const weight = product.nutrition.hasOwnProperty('weight') ? parseInt(product.nutrition.weight) : 100;
         const calories = parseInt(product.nutrition.calories);
 
         if(weight && calories){
@@ -70,7 +71,7 @@ class CaloriesNew extends React.Component{
                 </div>
                 <div className={'d-flex flex-row mb-5 align-self-center meal-new-title'}>{product.lang.en}</div>
                 <div className={'d-flex jutify-content-around flex-row mb-5'}>
-                    <Input className={'d-flex flex-column meal-new-square'} type='number' onChange={this.setCalories.bind(this)} value={this.state.product.nutrition.weight}/>
+                    <Input className={'d-flex flex-column meal-new-square'} type='number' onChange={this.setCalories.bind(this)} value={this.state.weight}/>
                     <Input className={'d-flex flex-column meal-new-square'} disabled type='text' value={parseInt(this.state.product.nutrition.calories) ? this.state.product.nutrition.calories + ' kkal' : ':P'}/>
                 </div>
                 <div className={'d-flex justify-content-center meal-new-bottom'} onClick={this.calculate.bind(this)}> + Add</div>
