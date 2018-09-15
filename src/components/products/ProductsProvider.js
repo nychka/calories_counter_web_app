@@ -78,7 +78,6 @@ export class ProductsProvider extends React.Component{
                 return false;
             }
             const consumedProducts = prevState.consumedProducts;
-            let consumedCalories = 0;
             product.consumedAt = prevState.moment;
             consumedProducts.push(product);
             const consumedCalories = this.countConsumedCalories(consumedProducts);

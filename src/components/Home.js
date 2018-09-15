@@ -18,7 +18,6 @@ class Home extends React.Component
     }
 
     render(){
-        debugger;
         const self = this;
         const consumedProducts = this.props.consumedProducts.filter(product => {
             const moment = toMomentObject(new Date(product.consumedAt));
@@ -36,7 +35,6 @@ class Home extends React.Component
                         id="your_unique_id" // PropTypes.string.isRequired,
                     />
                 </div>
-                { this.isRightMoment(toMomentObject(new Date()), this.props.moment) &&
                 <div id={'select-products'}>
                     <Creatable
                     value={this.props.selectedProduct}
@@ -48,7 +46,7 @@ class Home extends React.Component
                     isValidNewOption={isValidNewOption}
                     placeholder={'Search product'}
                    />
-                </div> }
+                </div>
                 <div className={'d-flex flex-wrap align-items-end mt-3 consumed-products-wrapper'}>
                 {
                     consumedProducts.length ?
