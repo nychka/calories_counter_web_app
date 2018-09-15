@@ -15,7 +15,19 @@ class Home extends React.Component
             focused: false
         }
         this.isRightMoment = (moment) => isRightMoment(moment, this.props.moment);
+
+        this.consumedDays = this.props.consumedProducts.map(product => toMomentObject(new Date(product.consumedAt)));
     }
+
+    isOutsideRange = (day) => {
+        return !this.consumedDays.some(consumedDay => isRightMoment(consumedDay, day));
+    }
+
+    isDayBlocked = (day) => {
+        //console.count('isOutsideRange');
+    }
+
+
 
     render(){
         const self = this;
@@ -26,15 +38,6 @@ class Home extends React.Component
 
         return(
             <div className='d-flex flex-column'>
-                <div id={'select-date'}>
-                    <SingleDatePicker
-                        date={this.props.moment} // momentPropTypes.momentObj or null
-                        onDateChange={(date => this.props.pickMoment(date))} // PropTypes.func.isRequired
-                        focused={this.state.focused} // PropTypes.bool
-                        onFocusChange={({ focused }) => this.setState({ focused })} // PropTypes.func.isRequired
-                        id="your_unique_id" // PropTypes.string.isRequired,
-                    />
-                </div>
                 <div id={'select-products'}>
                     <Creatable
                     value={this.props.selectedProduct}
@@ -46,6 +49,22 @@ class Home extends React.Component
                     isValidNewOption={isValidNewOption}
                     placeholder={'Search product'}
                    />
+                </div>
+                <div id={'select-date'} className={'d-flex mt-3 md-3'}>
+                    <SingleDatePicker
+                        date={this.props.moment} // momentPropTypes.momentObj or null
+                        onDateChange={(date => this.props.pickMoment(date))} // PropTypes.func.isRequired
+                        focused={this.state.focused} // PropTypes.bool
+                        onFocusChange={({ focused }) => this.setState({ focused })} // PropTypes.func.isRequired
+                        id="your_unique_id" // PropTypes.string.isRequired,
+                        numberOfMonths={1}
+                        displayFormat="D MMM YYYY"
+                        showDefaultInputIcon inputIconPosition="after"
+                        readOnly
+                        withPortal autoFocus
+                        isOutsideRange={this.isOutsideRange.bind(this)}
+                        isDayBlocked={this.isDayBlocked.bind(this)}
+                    />
                 </div>
                 <div className={'d-flex flex-wrap align-items-end mt-3 consumed-products-wrapper'}>
                 {
