@@ -1,12 +1,18 @@
 import React from 'react';
-import { configure, shallow } from 'enzyme';
+import { configure, shallow, mount } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import Home from './Home';
+import { ProductsProvider, ProductsContext } from './products/ProductsProvider';
 import { toMomentObject } from 'react-dates';
+import { localStorageFake } from '../utils';
 
+window.localStorage = localStorageFake;
 configure({ adapter: new Adapter()});
+ProductsProvider.prototype.fetch = jest.fn(() => { /*console.log('fetch mocked by jest')*/});
 
 describe('<Home />', () => {
+    beforeEach(() => window.localStorage.clear());
+
     const product = {
         id: 1,
         lang: { en: 'title'},
@@ -15,6 +21,7 @@ describe('<Home />', () => {
     const noConsumedProductsTitleSelector = 'h3';
     const consumedProductsWrapper = 'div.consumed-products-wrapper';
     const selectProductsSelector = '#select-products';
+    const removeSelector = '.product-card-remove';
 
     const daysAgo = ago => {
         let d = new Date();
@@ -28,16 +35,15 @@ describe('<Home />', () => {
         const defaults = { consumed: [], moment: todayMoment() };
         const settings = Object.assign(defaults, options);
 
-        return shallow(
-            <Home
-                consumedProducts={settings.consumed}
-                selectedProduct={product}
-                pickProductHandler={() => {}}
-                handleCreate={() => {}}
-                productsOptions={{}}
-                moment={settings.moment}
-                
-            />
+        ProductsProvider.prototype.getMoment = jest.fn(() => settings.moment);
+        window.localStorage.setItem('consumedProducts', JSON.stringify(settings.consumed));
+        
+        return mount(
+            <ProductsProvider>
+                <ProductsContext.Consumer>
+                    { props => <Home {...props} />}
+                </ProductsContext.Consumer>
+            </ProductsProvider>
         );
     };
 
@@ -47,6 +53,7 @@ describe('<Home />', () => {
 
         for(let i = 0; i < count; i += 1) {
             let consumedProduct = Object.assign({}, product);
+            consumedProduct.id = i;
             consumedProduct.consumedAt = time;
             products.push(consumedProduct);
         }
@@ -91,5 +98,18 @@ describe('<Home />', () => {
         const wrapper = subject({ moment: toMomentObject(yesterday), consumed: consumedProducts});
 
         expect(wrapper.find(consumedProductsWrapper).children()).toHaveLength(4);
+    });
+
+    it('removes consumed product', () => {
+        const wrapper = subject({ consumed: buildConsumedProducts(3) });
+        const container = wrapper.find(consumedProductsWrapper);
+        
+        expect(container.children()).toHaveLength(3);
+        
+        container.childAt(0).find(removeSelector).simulate('click');
+        container.childAt(1).find(removeSelector).simulate('click');
+        wrapper.update();
+       
+        expect(wrapper.find(consumedProductsWrapper).children()).toHaveLength(1);
     });
 });

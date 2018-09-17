@@ -61,7 +61,7 @@ class Home extends React.Component
                         displayFormat="D MMM YYYY"
                         showDefaultInputIcon inputIconPosition="after"
                         readOnly
-                        withPortal autoFocus
+                        withPortal
                         isOutsideRange={this.isOutsideRange.bind(this)}
                         isDayBlocked={this.isDayBlocked.bind(this)}
                     />
@@ -69,7 +69,7 @@ class Home extends React.Component
                 <div className={'d-flex flex-wrap align-items-end mt-3 consumed-products-wrapper'}>
                 {
                     consumedProducts.length ?
-                    consumedProducts.map(product => <ProductCard key={product.id} product={product}/>)
+                    consumedProducts.map(product => <ProductCard removeConsumedProduct={this.props.removeConsumedProduct} key={product.id} product={product}/>)
                     : <h3>No consumed products</h3> }
                 </div>
             </div>

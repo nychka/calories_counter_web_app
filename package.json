@@ -4,11 +4,13 @@
   "private": true,
   "dependencies": {
     "axios": "^0.18.0",
+    "axios-mock-adapter": "^1.15.0",
     "bootstrap": "^4.1.2",
     "dotenv": "^6.0.0",
     "enzyme": "^3.6.0",
     "enzyme-adapter-react-16": "^1.5.0",
     "history": "^4.7.2",
+    "jest": "^23.6.0",
     "moment": "^2.22.2",
     "npm": "^6.2.0",
     "rc-progress": "^2.2.5",

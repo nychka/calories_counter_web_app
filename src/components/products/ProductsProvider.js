@@ -8,6 +8,7 @@ export class ProductsProvider extends React.Component{
     constructor(props){
         super(props);
         const consumedProducts = this.getItem('consumedProducts');
+        const moment = this.getMoment();
 
         this.state = {
             currentPage: 1,
@@ -17,7 +18,7 @@ export class ProductsProvider extends React.Component{
             caloriesLimit: 2000,
             products: [],
             productsOptions: [],
-            moment: toMomentObject(new Date()),
+            moment: moment,
             consumedProducts: consumedProducts,
             consumedCalories: this.countConsumedCalories(consumedProducts),
             selectedProduct: {value: '', label: <span>Type product title here...</span>},
@@ -32,20 +33,31 @@ export class ProductsProvider extends React.Component{
             pickProductHandler: this.pickProductHandler.bind(this),
             handleCreate: this.handleCreate.bind(this),
             pickMoment: this.pickMoment.bind(this),
-            isPresentMoment: this.isPresentMoment.bind(this)
+            isPresentMoment: this.isPresentMoment.bind(this),
+            removeConsumedProduct: this.removeConsumedProduct.bind(this)
         }
-        console.log('Products Provider constructor');
     }
 
     componentDidMount(){
         this.fetch();
-        console.log('products provider did mount');
     }
 
     isPresentMoment = () => isRightMoment(toMomentObject(new Date()), this.state.moment);
 
     pickMoment(date){
         this.setState({moment: date});
+    }
+
+    removeConsumedProduct = (product) => {
+        const id = parseInt(product.target.getAttribute('data-id'));
+
+        this.setState((prevState) => {
+            const consumedProducts = prevState.consumedProducts.filter(item => item.id !== id); 
+            const consumedCalories = this.countConsumedCalories(consumedProducts);
+            this.saveItem('consumedProducts', consumedProducts);
+
+            return { consumedProducts: consumedProducts, consumedCalories: consumedCalories };
+        });
     }
 
     pickProductHandler(selected){
@@ -63,11 +75,11 @@ export class ProductsProvider extends React.Component{
     }
 
     saveItem = (key, value) => {
-        localStorage.setItem(key, JSON.stringify(value));
+        window.localStorage.setItem(key, JSON.stringify(value));
     }
 
     getItem = (key) => {
-        return JSON.parse(localStorage.getItem(key)) || [];
+        return JSON.parse(window.localStorage.getItem(key)) || [];
     }
 
     addCalories(product){
@@ -219,3 +231,5 @@ export class ProductsProvider extends React.Component{
         )
     }
 }
+
+ProductsProvider.prototype.getMoment = () => toMomentObject(new Date());

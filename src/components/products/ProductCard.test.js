@@ -10,6 +10,6 @@ describe('<ProductCard />', () => {
         const product = { id: 1, nutrition: { calories: 100 }};
         const wrapper = shallow(<ProductCard product={product}/>);
 
-        expect(wrapper.find('div.flex-row')).toHaveLength(2);
+        expect(wrapper.find('.product-card-body')).toHaveLength(1);
    });
 });

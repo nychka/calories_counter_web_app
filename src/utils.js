@@ -66,3 +66,13 @@ export const isRightMoment = (moment, currentMoment) => {
 
     return start < date && end > date;
 };
+
+export const localStorageFake = new class{
+    store = {};
+    setItem = (key, val) => (this.store[key] = val);
+    getItem = key => {
+        return this.store.hasOwnProperty(key) ? this.store[key] : [];
+    };
+    removeItem = key => { delete this.store[key]; };
+    clear = () => (this.store = {});
+};
