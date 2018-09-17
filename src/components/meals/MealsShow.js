@@ -1,13 +1,14 @@
 import React from 'react';
 import { withRouter } from 'react-router-dom';
 import { Input} from 'reactstrap';
+import { history } from '../../utils';
 
 class MealsShow extends React.Component{
     constructor(props){
         super(props);
 
         this.state = {
-            product: { image: '', lang: { en: ''}, nutrition: { calories: 1, weight: 100 }},
+            product: { image: '', lang: { en: ''}, nutrition: { calories: 1, weight: 1 }},
             weight: 100
         }
     }
@@ -41,13 +42,8 @@ class MealsShow extends React.Component{
 
     setProduct(){
         const self = this;
-        this.props.fetch().then((products) => {
-            const product = self.props.findProductByValue(self.props.match.params.id);
-            self.setState((prevState) => {
-                product.nutrition.ratio = product.nutrition.calories / 100;
-                return { product: product };
-            });
-        })
+        const meal = self.props.findMealByValue(self.props.match.params.id);
+        this.setState({product: meal});
     }
 
     componentDidMount(){
@@ -63,10 +59,13 @@ class MealsShow extends React.Component{
                 </div>
                 <div className={'d-flex flex-row mb-5 align-self-center meal-new-title'}>{product.lang.en}</div>
                 <div className={'d-flex jutify-content-around flex-row mb-5'}>
-                    <Input className={'d-flex flex-column meal-new-square'} disabled type='number' onChange={this.setCalories.bind(this)} value={this.state.weight}/>
+                    <Input className={'d-flex flex-column meal-new-square'} disabled type='number' onChange={this.setCalories.bind(this)} value={this.state.product.nutrition.weight}/>
                     <Input className={'d-flex flex-column meal-new-square'} disabled type='text' value={parseInt(this.state.product.nutrition.calories) ? this.state.product.nutrition.calories + ' kkal' : ':P'}/>
                 </div>
-                <div className={'d-flex justify-content-center meal-new-bottom'} onClick={this.calculate.bind(this)}> + Add</div>
+                <div className={'d-flex justify-content-around'}>
+                    <div className={'d-flex justify-content-center meal-cancel-button'} onClick={() => { history.goBack(); }}>Cancel</div>
+                    <div className={'d-flex justify-content-center meal-save-button'} onClick={() => {}}>Save</div>
+                </div>
             </div>
         )
     }

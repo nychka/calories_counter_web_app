@@ -25,6 +25,7 @@ export class ProductsProvider extends React.Component{
             fetch: this.fetch.bind(this),
             addCalories: this.addCalories.bind(this),
             findProductByValue: this.findProductByValue.bind(this),
+            findMealByValue: this.findMealByValue.bind(this),
             pickProductHandler: this.pickProductHandler.bind(this),
             handleCreate: this.handleCreate.bind(this),
             pickMoment: this.pickMoment.bind(this),
@@ -103,6 +104,10 @@ export class ProductsProvider extends React.Component{
 
     findProductByValue(value){
         return this.state.products.find(product => product.lang.en === value);
+    }
+
+    findMealByValue(value){
+        return this.state.consumedProducts.find(product => product.lang.en === value);
     }
 
     fetch(){

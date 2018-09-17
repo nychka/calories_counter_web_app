@@ -1,4 +1,6 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
+import { NavLink } from 'reactstrap';
 
 class ProductCard extends React.Component{
     constructor(props){
@@ -14,13 +16,14 @@ class ProductCard extends React.Component{
                          <img className={'product-card-remove'} src={'/icons/remove.png'} width="100%" height="100%"/> 
                     </div>
                 </div>
-                
-                <div className={'d-flex flex-row-reverse mt-auto product-card-body'}>
-                    <img onClick={this.props.showHandler} src={product.image} alt="Card image cap" />
-                </div>
-                <div className={'d-flex flex-row product-card-bottom mt-auto align-self-stretch justify-content-center align-items-center'}>
+                <NavLink tag={Link} to={"/meals/"+product.lang.en}>
+                    <div className={'d-flex flex-row-reverse mt-auto product-card-body'}>
+                        <img onClick={this.props.showHandler} src={product.image} alt="Card image cap" />
+                    </div>
+                    <div className={'d-flex flex-row product-card-bottom mt-auto align-self-stretch justify-content-center align-items-center'}>
                     {product.nutrition.calories} kkal
                     </div>
+                </NavLink>
             </div>
         )
     }

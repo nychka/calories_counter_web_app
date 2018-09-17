@@ -5,7 +5,6 @@ import Creatable from "react-select/lib/Creatable";
 import { SingleDatePicker, toMomentObject } from 'react-dates';
 import 'react-dates/initialize';
 import 'react-dates/lib/css/_datepicker.css';
-import { Link } from 'react-router-dom';
 
 class Home extends React.Component
 {
@@ -63,14 +62,12 @@ class Home extends React.Component
                 {
                     consumedProducts.length ?
                     consumedProducts.map(product => (
-                        // <Link tag={Link} to={"/meals/"+product.lang.en}>
                             <ProductCard 
                                 key={product.id}
                                 product={product}
                                 showHandler={this.props.showHandler}
                                 removeHandler={this.props.removeHandler}  
                             />
-                        // </Link>
                         ))
                     : <h3>No consumed products</h3> }
                 </div>

@@ -106,6 +106,24 @@
   width: 100%;
 }
 
+.meal-cancel-button {
+  box-shadow: 0px -4px 8px #ccc;
+  color: #cccccc;
+  font-size: 3rem;
+  text-align: center;
+  width: 100%;
+  margin-right: 2rem;
+}
+
+.meal-save-button {
+  background-color: #42d8d8;
+  box-shadow: 0px -4px 8px #ccc;
+  color: #ffffff;
+  font-size: 3rem;
+  text-align: center;
+  width: 100%;
+}
+
 .meal-new-bottom:hover {
   cursor: pointer;
 }
