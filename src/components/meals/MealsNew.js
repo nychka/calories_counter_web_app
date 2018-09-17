@@ -1,8 +1,8 @@
 import React from 'react';
 import { withRouter } from 'react-router-dom';
-import { Card, CardImg, CardTitle, CardSubtitle, CardBody, Button, Input} from 'reactstrap';
+import { Input} from 'reactstrap';
 
-class CaloriesNew extends React.Component{
+class MealsNew extends React.Component{
     constructor(props){
         super(props);
 
@@ -34,11 +34,7 @@ class CaloriesNew extends React.Component{
     }
 
     componentDidUpdate(){
-        console.warn('updates');
-        console.log(this.props.match.params.id, this.state.product.lang.en);
-
         if(this.props.match.params.id !== this.state.product.lang.en){
-            console.log('setting product...');
             this.setProduct();
         }
     }
@@ -46,19 +42,15 @@ class CaloriesNew extends React.Component{
     setProduct(){
         const self = this;
         this.props.fetch().then((products) => {
-            console.log(products);
             const product = self.props.findProductByValue(self.props.match.params.id);
-            console.log(product);
             self.setState((prevState) => {
                 product.nutrition.ratio = product.nutrition.calories / 100;
-                console.log('...product has been set', product);
                 return { product: product };
             });
         })
     }
 
     componentDidMount(){
-        console.log('component did mount');
         this.setProduct();
     }
 
@@ -80,4 +72,4 @@ class CaloriesNew extends React.Component{
     }
 }
 
-export default withRouter(CaloriesNew);
+export default withRouter(MealsNew);
