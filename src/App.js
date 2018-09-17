@@ -10,8 +10,6 @@ import MealsNew from './components/meals/MealsNew';
 import MealsShow from './components/meals/MealsShow';
 import {axio, defaultHeaders} from './utils';
 
-
-
 class App extends React.Component {
 
     failGoogle(response){

@@ -28,12 +28,12 @@
   cursor: pointer;
 }
 
-.product-card-remove {
+.product-card-remove-wrapper {
   opacity: 0;
   font-family: Arial, Helvetica, sans-serif;
 }
 
-.product-card-remove:hover {
+.product-card-remove-wrapper:hover {
   cursor: pointer;
 }
 
@@ -50,7 +50,7 @@
   font-size: 1rem;
 }
 
-.product-card:hover .product-card-remove{
+.product-card:hover .product-card-remove-wrapper{
   opacity: 1;
 }
 

@@ -44,7 +44,7 @@ export class ProductsProvider extends React.Component{
     }
 
     removeHandler = (product) => {
-        const id = parseInt(product.target.getAttribute('data-id'));
+        const id = parseInt(product.target.parentElement.getAttribute('data-id'));
 
         this.setState((prevState) => {
             const consumedProducts = prevState.consumedProducts.filter(item => item.id !== id); 
