@@ -52,7 +52,8 @@ class Home extends React.Component
                         id="date-picker"
                         numberOfMonths={1}
                         displayFormat="D MMM YYYY"
-                        showDefaultInputIcon inputIconPosition="after"
+                        customInputIcon={<img src='/icons/calendar.svg' width="32px" />}
+                        //customInputIconPosition="before"
                         readOnly
                         withPortal
                         isOutsideRange={this.isOutsideRange.bind(this)}
@@ -62,14 +63,14 @@ class Home extends React.Component
                 {
                     consumedProducts.length ?
                     consumedProducts.map(product => (
-                        <Link tag={Link} to={"/meals/"+product.lang.en}>
+                        // <Link tag={Link} to={"/meals/"+product.lang.en}>
                             <ProductCard 
                                 key={product.id}
                                 product={product}
                                 showHandler={this.props.showHandler}
                                 removeHandler={this.props.removeHandler}  
                             />
-                        </Link>
+                        // </Link>
                         ))
                     : <h3>No consumed products</h3> }
                 </div>
