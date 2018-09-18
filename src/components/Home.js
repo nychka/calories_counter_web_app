@@ -1,6 +1,7 @@
 import React from 'react';
+import { Router } from 'react-router-dom';
 import ProductCard from './products/ProductCard';
-import {isValidNewOption, isRightMoment} from "../utils";
+import {isValidNewOption, isRightMoment, history} from "../utils";
 import Creatable from "react-select/lib/Creatable";
 import { SingleDatePicker, toMomentObject } from 'react-dates';
 import 'react-dates/initialize';
@@ -62,12 +63,14 @@ class Home extends React.Component
                 {
                     consumedProducts.length ?
                     consumedProducts.map(product => (
+                        <Router history={history} key={product.id}>
                             <ProductCard 
                                 key={product.id}
                                 product={product}
                                 showHandler={this.props.showHandler}
                                 removeHandler={this.props.removeHandler}  
                             />
+                            </Router>
                         ))
                     : <h3>No consumed products</h3> }
                 </div>
