@@ -9,11 +9,11 @@ class ProductCard extends React.Component{
 
     render(){
         const product = this.props.product;
-        const showPath = '/meals/'+ (product.lang && product.lang.en);
+        const showPath = '/meals/'+ product.consumedAt;
         return(
-            <div key={product.id} className={'d-flex flex-column justify-content-center align-items-end mr-5 mb-5 product-card'}>
+            <div key={product.consumedAt} className={'d-flex flex-column justify-content-center align-items-end mr-5 mb-5 product-card'}>
                 <div className={'d-flex flex-row product-card-top mb-auto align-self-stretch justify-content-end align-items-center'}>
-                    <div onClick={this.props.removeHandler} data-id={product.id} height="2rem" className={'d-flex product-card-remove-wrapper align-self-right'}>
+                    <div onClick={this.props.removeHandler} data-id={product.consumedAt} height="2rem" className={'d-flex product-card-remove-wrapper align-self-right'}>
                          <img className={'product-card-remove'} src={'/icons/remove.png'} width="100%" height="100%"/> 
                     </div>
                 </div>

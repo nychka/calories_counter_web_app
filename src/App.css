@@ -97,6 +97,18 @@
   color: #1c0c0c
 }
 
+.product-new-title {
+  font-family: Arial;
+  font-size: 2rem;
+  font-weight: bold;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: 0.22;
+  letter-spacing: normal;
+  text-align: center;
+  color: #1c0c0c
+}
+
 .meal-new-bottom {
   background-color: #42d8d8;
   box-shadow: 0px -4px 8px #ccc;

@@ -34,20 +34,18 @@ class MealsNew extends React.Component{
     }
 
     componentDidUpdate(){
-        if(this.props.match.params.id !== this.state.product.lang.en){
-            this.setProduct();
-        }
+       
     }
 
     setProduct(){
         const self = this;
-        this.props.fetch().then((products) => {
-            const product = self.props.findProductByValue(self.props.match.params.id);
-            self.setState((prevState) => {
-                product.nutrition.ratio = product.nutrition.calories / 100;
-                return { product: product };
-            });
-        })
+        const uuid = self.props.location.state.uuid;
+        const product = self.props.findProductByValue(uuid);
+        
+        self.setState((prevState) => {
+            product.nutrition.ratio = product.nutrition.calories / 100;
+            return { product: product };
+        });
     }
 
     componentDidMount(){

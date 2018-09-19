@@ -8,6 +8,7 @@ import FacebookLogin from 'react-facebook-login';
 import GoogleLogin from 'react-google-login'
 import MealsNew from './components/meals/MealsNew';
 import MealsShow from './components/meals/MealsShow';
+import ProductNew from './components/products/ProductNew';
 import {axio, defaultHeaders} from './utils';
 
 class App extends React.Component {
@@ -62,7 +63,13 @@ class App extends React.Component {
                   )}
               </ProductsContext.Consumer>
                 <Switch>
-                    <Route path='/meals/:id/new' exact render={() => (
+                    <Route path='/products/new' exact render={() => (
+                        <ProductsContext.Consumer>
+                            { props => <ProductNew {...props} /> }
+                        </ProductsContext.Consumer>
+                    )} />
+
+                    <Route path='/meals/new' exact render={() => (
                         <ProductsContext.Consumer>
                             { props => <MealsNew {...props} /> }
                         </ProductsContext.Consumer>

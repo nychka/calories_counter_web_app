@@ -1,5 +1,5 @@
 import React from 'react';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import { Input} from 'reactstrap';
 import { history } from '../../utils';
 
@@ -35,14 +35,13 @@ class MealsShow extends React.Component{
     }
 
     componentDidUpdate(){
-        if(this.props.match.params.id !== this.state.product.lang.en){
-            this.setProduct();
-        }
     }
 
     setProduct(){
         const self = this;
-        const meal = self.props.findMealByValue(self.props.match.params.id);
+        const uuid = parseInt(self.props.match.params.id);
+        const meal = self.props.findMealBy('consumedAt', uuid);
+
         this.setState({product: meal});
     }
 
@@ -62,9 +61,11 @@ class MealsShow extends React.Component{
                     <Input className={'d-flex flex-column meal-new-square'} disabled type='number' onChange={this.setCalories.bind(this)} value={this.state.product.nutrition.weight}/>
                     <Input className={'d-flex flex-column meal-new-square'} disabled type='text' value={parseInt(this.state.product.nutrition.calories) ? this.state.product.nutrition.calories + ' kkal' : ':P'}/>
                 </div>
-                <div className={'d-flex justify-content-around'}>
-                    <div className={'d-flex justify-content-center meal-cancel-button'} onClick={() => { history.goBack(); }}>Cancel</div>
-                    <div className={'d-flex justify-content-center meal-save-button'} onClick={() => {}}>Save</div>
+                <div className={'d-flex justify-content-stretch'}>
+                    <div className={'d-flex justify-content-center meal-cancel-button'}>
+                        <Link to={'/'}> Cancel</Link>
+                    </div>
+                    {/* <div className={'d-flex justify-content-center meal-save-button'} onClick={() => {}}>Save</div> */}
                 </div>
             </div>
         )

@@ -63,9 +63,9 @@ class Home extends React.Component
                 {
                     consumedProducts.length ?
                     consumedProducts.map(product => (
-                        <Router history={history} key={product.id}>
+                        <Router history={history} key={product.consumedAt}>
                             <ProductCard 
-                                key={product.id}
+                                key={product.consumedAt}
                                 product={product}
                                 showHandler={this.props.showHandler}
                                 removeHandler={this.props.removeHandler}  

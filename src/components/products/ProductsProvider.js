@@ -8,6 +8,7 @@ export class ProductsProvider extends React.Component{
     constructor(props){
         super(props);
         const consumedProducts = this.getItem('consumedProducts');
+        const products = this.getItem('products');
         const moment = this.getMoment();
 
         this.state = {
@@ -16,7 +17,7 @@ export class ProductsProvider extends React.Component{
             currentAmount: 0,
             totalAmount: 100,
             caloriesLimit: 2000,
-            products: [],
+            products: products,
             productsOptions: [],
             moment: moment,
             consumedProducts: consumedProducts,
@@ -26,11 +27,13 @@ export class ProductsProvider extends React.Component{
             addCalories: this.addCalories.bind(this),
             findProductByValue: this.findProductByValue.bind(this),
             findMealByValue: this.findMealByValue.bind(this),
+            findMealBy: this.findMealBy.bind(this),
             pickProductHandler: this.pickProductHandler.bind(this),
             handleCreate: this.handleCreate.bind(this),
             pickMoment: this.pickMoment.bind(this),
             isPresentMoment: this.isPresentMoment.bind(this),
-            removeHandler: this.removeHandler.bind(this)
+            removeHandler: this.removeHandler.bind(this),
+            addProduct: this.addProduct.bind(this)
         }
     }
 
@@ -48,7 +51,7 @@ export class ProductsProvider extends React.Component{
         const id = parseInt(product.target.parentElement.getAttribute('data-id'));
 
         this.setState((prevState) => {
-            const consumedProducts = prevState.consumedProducts.filter(item => item.id !== id); 
+            const consumedProducts = prevState.consumedProducts.filter(item => item.consumedAt !== id); 
             const consumedCalories = this.countConsumedCalories(consumedProducts);
             this.saveItem('consumedProducts', consumedProducts);
 
@@ -64,11 +67,11 @@ export class ProductsProvider extends React.Component{
     }
 
     pickProductHandler(selected){
-        history.push({pathname: '/meals/' + selected.value + '/new'});
+        history.push({pathname: '/meals/new', state: { uuid: selected.value }});
     }
 
-    handleCreate(){
-        alert('create here');
+    handleCreate(title){
+        history.push({pathname: '/products/new', state: { title: title }});
     }
 
     countConsumedCalories = (consumedProducts) => {
@@ -92,7 +95,7 @@ export class ProductsProvider extends React.Component{
                 return false;
             }
             const consumedProducts = prevState.consumedProducts;
-            product.consumedAt = prevState.moment;
+            product.consumedAt = new Date().getTime();
             consumedProducts.push(product);
             const consumedCalories = this.countConsumedCalories(consumedProducts);
             this.saveItem('consumedProducts', consumedProducts);
@@ -100,6 +103,16 @@ export class ProductsProvider extends React.Component{
             return { consumedProducts: consumedProducts, consumedCalories: consumedCalories }
         });
         history.push('/');
+    }
+
+    addProduct = (product) => {
+        const options = Object.assign([], this.state.productsOptions);
+        const products = Object.assign([], this.state.products);
+        const option = this.buildProductOption(product);
+        options.push(option);
+        products.push(product);
+
+        this.setState({productsOptions: options, products: products});
     }
 
     findProductByValue(value){
@@ -110,33 +123,43 @@ export class ProductsProvider extends React.Component{
         return this.state.consumedProducts.find(product => product.lang.en === value);
     }
 
-    fetch(){
-        if(this.state.products.length) {
-            console.info('RESOLVE products');
-            return Promise.resolve(this.state.products);
-        }
+    findMealBy(key, value){
+        return this.state.consumedProducts.find(product => product[key] === value);
+    }
 
+    buildProductOption = (product) => {
+        const label = <span><img width={'48px'} height={'48px'} src={product.image} />{product.lang.en}</span>;
+        return { value: product.lang.en, label: label };
+    }
+
+    buildProductsOptions = () => {
+        console.log('building products options...');
         const self = this;
-        return axio({
-            method: 'get',
-            url: '/products?page='+self.state.currentPage,
-            headers: defaultHeaders()
-        })
+        const options = this.state.products.map(product => {
+            return self.buildProductOption(product);   
+        });
+        self.setState({ productsOptions: options });
+    }
+
+    fetch(){
+        const self = this;
+
+        if(this.state.products.length) {
+            console.info('GET products from localStorage');
+            if(!this.state.productsOptions.length) self.buildProductsOptions();
+            return Promise.resolve(this.state.products);
+        }else{
+            return axio({
+                method: 'get',
+                url: '/products',
+                headers: defaultHeaders()
+            })
             .then(function (response) {
                 console.log(response);
                 self.setState({products: response.data.products});
-                self.setState({totalPages: response.data.meta.totalPages});
-                self.setProgress(response.data.meta.total);
-                console.log('get products...done!');
-
-                const options = response.data.products.map(product => {
-                    const label = <span><img width={'48px'} height={'48px'} src={product.image} />{product.lang.en}</span>;
-                    return {value: product.lang.en, label: label}
-                });
-                self.setState((prevState) => {
-                    console.log('changing state productsOptions');
-                    return { productsOptions: options };
-                });
+                self.saveItem('products',response.data.products);
+                self.buildProductsOptions();
+                console.info('GET products from API');
 
                 return response.data.products;
             })
@@ -147,12 +170,7 @@ export class ProductsProvider extends React.Component{
                     state: { error: '401' }
                 });
             });
-    }
-
-    setProgress(total){
-        this.setState({currentAmount: total});
-        let percent = this.state.totalAmount / 100 * total;
-        this.setState({progressPercent: percent});
+        }
     }
 
     render(){
