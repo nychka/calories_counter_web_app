@@ -1,6 +1,7 @@
 import React from "react";
 import {axio, defaultHeaders, history, isRightMoment} from "../../utils";
 import { toMomentObject } from 'react-dates';
+import createFilterOptions from 'react-select-fast-filter-options'
 
 export const ProductsContext = React.createContext({});
 
@@ -19,6 +20,7 @@ export class ProductsProvider extends React.Component{
             caloriesLimit: 2000,
             products: products,
             productsOptions: [],
+            filterOptions: [],
             moment: moment,
             consumedProducts: consumedProducts,
             consumedCalories: this.countConsumedCalories(consumedProducts),
@@ -61,13 +63,14 @@ export class ProductsProvider extends React.Component{
 
     showHandler = (e) => {
         let id = e.target.parentElement.getAttribute('key');
-        console.log('meal', id); alert('FOO');
         
         history.push({pathname: '/meals/' + id});
     }
 
     pickProductHandler(selected){
-        history.push({pathname: '/meals/new', state: { uuid: selected.value }});
+        if(selected && selected.value && selected.value.length >= 2){
+            history.push({pathname: '/meals/new', state: { uuid: selected.value }});
+        }
     }
 
     handleCreate(title){
@@ -111,8 +114,13 @@ export class ProductsProvider extends React.Component{
         const option = this.buildProductOption(product);
         options.push(option);
         products.push(product);
+        const filterOptions = createFilterOptions({ options });
 
-        this.setState({productsOptions: options, products: products});
+        this.setState({
+            productsOptions: options,
+            filterOptions: filterOptions,
+            products: products
+        });
     }
 
     findProductByValue(value){
@@ -128,7 +136,10 @@ export class ProductsProvider extends React.Component{
     }
 
     buildProductOption = (product) => {
-        const label = <span><img width={'48px'} height={'48px'} src={product.image} />{product.lang.en}</span>;
+        const label = <span>
+                <img width={'48px'} height={'48px'} src={product.image} />
+                {product.lang.en}
+        </span>;
         return { value: product.lang.en, label: label };
     }
 
