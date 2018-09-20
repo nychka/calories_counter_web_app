@@ -44,7 +44,7 @@ class Home extends React.Component
                     isSearchable
                     isValidNewOption={isValidNewOption}
                     placeholder={'Search product'}
-                    selectComponent={VirtualizedSelect.Creatable}
+                    selectComponent={Creatable}
                     optionHeight={64}
                     maxHeight={500}
                     clearable={false}
