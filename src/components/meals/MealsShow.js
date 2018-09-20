@@ -8,8 +8,7 @@ class MealsShow extends React.Component{
         super(props);
 
         this.state = {
-            product: { image: '', lang: { en: ''}, nutrition: { calories: 1, weight: 1 }},
-            weight: 100
+            product: { image: '', lang: { en: ''}, nutrition: { calories: 1, weight: 1 }}
         }
     }
     setCalories(e){
@@ -58,7 +57,7 @@ class MealsShow extends React.Component{
                 </div>
                 <div className={'d-flex flex-row mb-5 align-self-center meal-new-title'}>{product.lang.en}</div>
                 <div className={'d-flex jutify-content-around flex-row mb-5'}>
-                    <Input className={'d-flex flex-column meal-new-square'} disabled type='number' onChange={this.setCalories.bind(this)} value={this.state.product.nutrition.weight}/>
+                    <Input className={'d-flex flex-column meal-new-square'} disabled type='number' value={this.state.product.nutrition.weight}/>
                     <Input className={'d-flex flex-column meal-new-square'} disabled type='text' value={parseInt(this.state.product.nutrition.calories) ? this.state.product.nutrition.calories + ' kkal' : ':P'}/>
                 </div>
                 <div className={'d-flex justify-content-stretch'}>
