@@ -1,5 +1,5 @@
 import React from "react";
-import {axio, defaultHeaders, history, userSignedIn, isRightMoment} from "../../utils";
+import {axio, defaultHeaders, history, isRightMoment} from "../../utils";
 import { toMomentObject } from 'react-dates';
 
 export const ProductsContext = React.createContext({});
@@ -8,6 +8,7 @@ export class ProductsProvider extends React.Component{
     constructor(props){
         super(props);
         const consumedProducts = this.getItem('consumedProducts');
+        const products = this.getItem('products');
         const moment = this.getMoment();
 
         this.state = {
@@ -16,25 +17,23 @@ export class ProductsProvider extends React.Component{
             currentAmount: 0,
             totalAmount: 100,
             caloriesLimit: 2000,
-            products: [],
+            products: products,
             productsOptions: [],
             moment: moment,
             consumedProducts: consumedProducts,
             consumedCalories: this.countConsumedCalories(consumedProducts),
             selectedProduct: {value: '', label: <span>Type product title here...</span>},
-            pageHandler: this.pageHandler.bind(this),
             fetch: this.fetch.bind(this),
-            addHandler: this.addHandler.bind(this),
-            editHandler: this.editHandler.bind(this),
-            removeHandler: this.removeHandler.bind(this),
-            showHandler: this.showHandler.bind(this),
             addCalories: this.addCalories.bind(this),
             findProductByValue: this.findProductByValue.bind(this),
+            findMealByValue: this.findMealByValue.bind(this),
+            findMealBy: this.findMealBy.bind(this),
             pickProductHandler: this.pickProductHandler.bind(this),
             handleCreate: this.handleCreate.bind(this),
             pickMoment: this.pickMoment.bind(this),
             isPresentMoment: this.isPresentMoment.bind(this),
-            removeConsumedProduct: this.removeConsumedProduct.bind(this)
+            removeHandler: this.removeHandler.bind(this),
+            addProduct: this.addProduct.bind(this)
         }
     }
 
@@ -48,11 +47,11 @@ export class ProductsProvider extends React.Component{
         this.setState({moment: date});
     }
 
-    removeConsumedProduct = (product) => {
-        const id = parseInt(product.target.getAttribute('data-id'));
+    removeHandler = (product) => {
+        const id = parseInt(product.target.parentElement.getAttribute('data-id'));
 
         this.setState((prevState) => {
-            const consumedProducts = prevState.consumedProducts.filter(item => item.id !== id); 
+            const consumedProducts = prevState.consumedProducts.filter(item => item.consumedAt !== id); 
             const consumedCalories = this.countConsumedCalories(consumedProducts);
             this.saveItem('consumedProducts', consumedProducts);
 
@@ -60,12 +59,19 @@ export class ProductsProvider extends React.Component{
         });
     }
 
-    pickProductHandler(selected){
-        history.push({pathname: '/products/' + selected.value});
+    showHandler = (e) => {
+        let id = e.target.parentElement.getAttribute('key');
+        console.log('meal', id); alert('FOO');
+        
+        history.push({pathname: '/meals/' + id});
     }
 
-    handleCreate(){
-        console.log('create here');
+    pickProductHandler(selected){
+        history.push({pathname: '/meals/new', state: { uuid: selected.value }});
+    }
+
+    handleCreate(title){
+        history.push({pathname: '/products/new', state: { title: title }});
     }
 
     countConsumedCalories = (consumedProducts) => {
@@ -83,60 +89,77 @@ export class ProductsProvider extends React.Component{
     }
 
     addCalories(product){
-        console.log('product', product);
         this.setState((prevState) => {
             if(!prevState.moment){
-                console.error('moment is not set! Pick right moment;)');
+                alert.error('moment is not set! Pick right moment;)');
                 return false;
             }
             const consumedProducts = prevState.consumedProducts;
-            product.consumedAt = prevState.moment;
+            product.consumedAt = new Date().getTime();
             consumedProducts.push(product);
             const consumedCalories = this.countConsumedCalories(consumedProducts);
-
             this.saveItem('consumedProducts', consumedProducts);
-            console.log('consumed products: ', consumedProducts, consumedCalories);
+
             return { consumedProducts: consumedProducts, consumedCalories: consumedCalories }
         });
         history.push('/');
+    }
+
+    addProduct = (product) => {
+        const options = Object.assign([], this.state.productsOptions);
+        const products = Object.assign([], this.state.products);
+        const option = this.buildProductOption(product);
+        options.push(option);
+        products.push(product);
+
+        this.setState({productsOptions: options, products: products});
     }
 
     findProductByValue(value){
         return this.state.products.find(product => product.lang.en === value);
     }
 
-    pageHandler = e => {
-        this.state.currentPage = e.selected + 1;
-        this.fetch();
+    findMealByValue(value){
+        return this.state.consumedProducts.find(product => product.lang.en === value);
+    }
+
+    findMealBy(key, value){
+        return this.state.consumedProducts.find(product => product[key] === value);
+    }
+
+    buildProductOption = (product) => {
+        const label = <span><img width={'48px'} height={'48px'} src={product.image} />{product.lang.en}</span>;
+        return { value: product.lang.en, label: label };
+    }
+
+    buildProductsOptions = () => {
+        console.log('building products options...');
+        const self = this;
+        const options = this.state.products.map(product => {
+            return self.buildProductOption(product);   
+        });
+        self.setState({ productsOptions: options });
     }
 
     fetch(){
-        if(this.state.products.length) {
-            console.info('RESOLVE products');
-            return Promise.resolve(this.state.products);
-        }
-
         const self = this;
-        return axio({
-            method: 'get',
-            url: '/products?page='+self.state.currentPage,
-            headers: defaultHeaders()
-        })
+
+        if(this.state.products.length) {
+            console.info('GET products from localStorage');
+            if(!this.state.productsOptions.length) self.buildProductsOptions();
+            return Promise.resolve(this.state.products);
+        }else{
+            return axio({
+                method: 'get',
+                url: '/products',
+                headers: defaultHeaders()
+            })
             .then(function (response) {
                 console.log(response);
                 self.setState({products: response.data.products});
-                self.setState({totalPages: response.data.meta.totalPages});
-                self.setProgress(response.data.meta.total);
-                console.log('get products...done!');
-
-                const options = response.data.products.map(product => {
-                    const label = <span><img width={'48px'} height={'48px'} src={product.image} />{product.lang.en}</span>;
-                    return {value: product.lang.en, label: label}
-                });
-                self.setState((prevState) => {
-                    console.log('changing state productsOptions');
-                    return { productsOptions: options };
-                });
+                self.saveItem('products',response.data.products);
+                self.buildProductsOptions();
+                console.info('GET products from API');
 
                 return response.data.products;
             })
@@ -147,80 +170,7 @@ export class ProductsProvider extends React.Component{
                     state: { error: '401' }
                 });
             });
-    }
-
-    addHandler = (product) => {
-        let products = this.state.products;
-        products.unshift(product);
-        const total = this.state.currentAmount + 1;
-        console.log(this.state.currentAmount, total);
-        this.setProgress(total);
-
-        this.setState({products: products});
-    }
-
-    editHandler = (product) => {
-        let products = this.state.products;
-
-        products.map((item, i) => {
-            if(item.id === product.id){
-                products[i] = product;
-                return true;
-            }
-        });
-
-        this.setState({products: products});
-    }
-
-    removeHandler = product => {
-        let canRemove = window.confirm('Are you really want to delete this product?');
-        let url = `/products/${product.id}`;
-        let products = this.state.products;
-        const self = this;
-        const total = this.state.currentAmount;
-
-        if(canRemove){
-            axio({
-                method: 'delete',
-                url: url,
-                headers: defaultHeaders()
-            })
-            .then((response) => {
-                products.map((item, i) => {
-                    if(item.id === product.id){
-                        products.splice(i, 1);
-                        self.setState({products: products});
-                        self.setProgress(total - 1);
-                        return false;
-                    }
-                });
-                console.log(response);
-            })
-            .catch((response) => {
-                console.log(response);
-                history.push({
-                    pathname: '/logout',
-                    state: { error: response }
-                });
-            })
-        }else{
-            return false;
         }
-    }
-
-    setProgress(total){
-        this.setState({currentAmount: total});
-        let percent = this.state.totalAmount / 100 * total;
-        this.setState({progressPercent: percent});
-    }
-
-    showHandler = (e) => {
-        let id = e.target.parentElement.getAttribute('data-id');
-        let product = this.state.products.find(item => item.id == id);
-        history.push({
-            pathname: '/products/' + id,
-            state: { product: product }
-        });
     }
 
     render(){

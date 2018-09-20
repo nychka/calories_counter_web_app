@@ -1,9 +1,9 @@
-import React, {Fragment} from 'react';
+import React from 'react';
+import { Router } from 'react-router-dom';
 import ProductCard from './products/ProductCard';
-import {isValidNewOption, isRightMoment} from "../utils";
+import {isValidNewOption, isRightMoment, history} from "../utils";
 import Creatable from "react-select/lib/Creatable";
 import { SingleDatePicker, toMomentObject } from 'react-dates';
-import moment from 'moment';
 import 'react-dates/initialize';
 import 'react-dates/lib/css/_datepicker.css';
 
@@ -15,19 +15,12 @@ class Home extends React.Component
             focused: false
         }
         this.isRightMoment = (moment) => isRightMoment(moment, this.props.moment);
-
         this.consumedDays = this.props.consumedProducts.map(product => toMomentObject(new Date(product.consumedAt)));
     }
 
     isOutsideRange = (day) => {
         return !this.consumedDays.some(consumedDay => isRightMoment(consumedDay, day));
     }
-
-    isDayBlocked = (day) => {
-        //console.count('isOutsideRange');
-    }
-
-
 
     render(){
         const self = this;
@@ -52,24 +45,33 @@ class Home extends React.Component
                 </div>
                 <div id={'select-date'} className={'d-flex mt-3 md-3'}>
                     <SingleDatePicker
-                        date={this.props.moment} // momentPropTypes.momentObj or null
-                        onDateChange={(date => this.props.pickMoment(date))} // PropTypes.func.isRequired
-                        focused={this.state.focused} // PropTypes.bool
-                        onFocusChange={({ focused }) => this.setState({ focused })} // PropTypes.func.isRequired
-                        id="your_unique_id" // PropTypes.string.isRequired,
+                        date={this.props.moment}
+                        onDateChange={(date => this.props.pickMoment(date))}
+                        focused={this.state.focused}
+                        onFocusChange={({ focused }) => this.setState({ focused })}
+                        id="date-picker"
                         numberOfMonths={1}
                         displayFormat="D MMM YYYY"
-                        showDefaultInputIcon inputIconPosition="after"
+                        customInputIcon={<img src='/icons/calendar.svg' width="32px" />}
+                        //customInputIconPosition="before"
                         readOnly
                         withPortal
                         isOutsideRange={this.isOutsideRange.bind(this)}
-                        isDayBlocked={this.isDayBlocked.bind(this)}
                     />
                 </div>
                 <div className={'d-flex flex-wrap align-items-end mt-3 consumed-products-wrapper'}>
                 {
                     consumedProducts.length ?
-                    consumedProducts.map(product => <ProductCard removeConsumedProduct={this.props.removeConsumedProduct} key={product.id} product={product}/>)
+                    consumedProducts.map(product => (
+                        <Router history={history} key={product.consumedAt}>
+                            <ProductCard 
+                                key={product.consumedAt}
+                                product={product}
+                                showHandler={this.props.showHandler}
+                                removeHandler={this.props.removeHandler}  
+                            />
+                            </Router>
+                        ))
                     : <h3>No consumed products</h3> }
                 </div>
             </div>

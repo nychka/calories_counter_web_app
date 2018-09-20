@@ -1,28 +1,15 @@
 import React from 'react';
-import { Route, Switch, Redirect } from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom';
 import Header from './components/Header';
 import Home from './components/Home';
 import './App.css';
-
 import { ProductsContext, ProductsProvider } from './components/products/ProductsProvider';
-import ProductList from "./components/products/ProductList";
-import ProductNew from './components/products/ProductNew';
-import ProductShow from './components/products/ProductShow';
-
-import { CategoriesContext, CategoriesProvider } from "./components/categories/CategoriesProvider";
-import CategoryList from "./components/categories/CategoryList";
-import CategoryNew from './components/categories/CategoryNew';
-
-import Login from './components/Login';
-import Logout from './components/Logout';
-import Profile from './components/Profile';
 import FacebookLogin from 'react-facebook-login';
 import GoogleLogin from 'react-google-login'
-
-import CaloriesNew from './components/CaloriesNew';
-import {axio, defaultHeaders, saveCurrentUser, userSignedIn} from './utils';
-
-
+import MealsNew from './components/meals/MealsNew';
+import MealsShow from './components/meals/MealsShow';
+import ProductNew from './components/products/ProductNew';
+import {axio, defaultHeaders} from './utils';
 
 class App extends React.Component {
 
@@ -69,7 +56,6 @@ class App extends React.Component {
   render() {
     return (
       <div className="App">
-          <CategoriesProvider>
           <ProductsProvider>
               <ProductsContext.Consumer>
                   { props => (
@@ -77,16 +63,25 @@ class App extends React.Component {
                   )}
               </ProductsContext.Consumer>
                 <Switch>
-                    <Route path='/products/:id' exact render={() => (
+                    <Route path='/products/new' exact render={() => (
                         <ProductsContext.Consumer>
-                            { props => <CaloriesNew {...props} /> }
+                            { props => <ProductNew {...props} /> }
                         </ProductsContext.Consumer>
                     )} />
-                    <Route path='/me' exact render={() => userSignedIn() ? <Profile /> : <Redirect to={'/'} /> } />
-                    <Route path='/logout' exact render={() => userSignedIn() ? <Logout /> : <Redirect to={'/'}/> } />
+
+                    <Route path='/meals/new' exact render={() => (
+                        <ProductsContext.Consumer>
+                            { props => <MealsNew {...props} /> }
+                        </ProductsContext.Consumer>
+                    )} />
+
+                    <Route path='/meals/:id' exact render={() => (
+                        <ProductsContext.Consumer>
+                            { props => <MealsShow {...props} /> }
+                        </ProductsContext.Consumer>
+                    )} />
+                
                     <Route path='/login' exact render={() => (
-                        <CategoriesContext.Consumer>
-                            { cProps => (
                                 <ProductsContext.Consumer>
                                     { props => (
                                         <div>
@@ -108,8 +103,6 @@ class App extends React.Component {
                                         </div>
                                     )}
                                 </ProductsContext.Consumer>
-                            )}
-                        </CategoriesContext.Consumer>
                     )} />
 
                     <Route path='/' exact render={() => (
@@ -117,59 +110,8 @@ class App extends React.Component {
                             { props => <Home {...props} />}
                         </ProductsContext.Consumer>
                     )} />
-                {/*<Route path="/products/new" exact render={() => ( userSignedIn() ?*/}
-                    {/*<CategoriesContext.Consumer>*/}
-                        {/*{ cProps => (*/}
-                            {/*<ProductsContext.Consumer>*/}
-                                {/*{(props) => <ProductNew handler={props.addHandler} categories={cProps.categories} fetch={cProps.fetch}/>}*/}
-                            {/*</ProductsContext.Consumer>*/}
-                        {/*)}*/}
-                    {/*</CategoriesContext.Consumer>*/}
-
-                    {/*: <Redirect to={'/'}/>)} />*/}
-
-                    <Route path="/categories/new" exact render={() => ( userSignedIn() ?
-                        <CategoriesContext.Consumer>
-                            { props => <CategoryNew handler={props.addHandler}/> }
-                        </CategoriesContext.Consumer>
-                    : <Redirect to={'/'}/> )} />
-
-                <Route path="/products/:id/edit" exact render={() => ( userSignedIn() ?
-                    <CategoriesContext.Consumer>
-                        { cProps => (
-                            <ProductsContext.Consumer>
-                                {(props) => <ProductNew handler={props.editHandler} categories={cProps.categories} fetch={cProps.fetch}/>}
-                            </ProductsContext.Consumer>
-                        )}
-                    </CategoriesContext.Consumer>
-                    : <Redirect to={'/'}/> )} />
-
-                    {/*<Route path="/categories/:id/edit" exact render={() => ( userSignedIn() ?*/}
-                        {/*<CategoriesContext.Consumer>*/}
-                            {/*{ props => <CategoryNew handler={props.editHandler} /> }*/}
-                        {/*</CategoriesContext.Consumer>*/}
-                        {/*: <Redirect to={'/'}/> )} />*/}
-
-                <Route path="/products" exact render={() => ( userSignedIn() ?
-                    <ProductsContext.Consumer>
-                            {(props) => <ProductList {...props} />}
-                    </ProductsContext.Consumer>
-                : <Redirect to={'/'}/>)} />
-
-                    <Route path="/categories" exact render={() => ( userSignedIn() ?
-                        <CategoriesContext.Consumer>
-                            {(props) =>  <CategoryList {...props}/>}
-                        </CategoriesContext.Consumer>
-                    : <Redirect to={'/'}/> )} />
-
-                    {/*<Route path="/products/:id" exact render={(props) => (  userSignedIn() ?*/}
-                        {/*<ProductsContext.Consumer>*/}
-                            {/*{ () => <ProductShow {...props} /> }*/}
-                        {/*</ProductsContext.Consumer>*/}
-                        {/*: <Redirect to={'/'}/> )} />*/}
                 </Switch>
           </ProductsProvider>
-          </CategoriesProvider>
       </div>
     );
   }
