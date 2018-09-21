@@ -2,7 +2,8 @@ import React from 'react';
 import { Router } from 'react-router-dom';
 import ProductCard from './products/ProductCard';
 import {isValidNewOption, isRightMoment, history} from "../utils";
-import { Creatable } from "react-select";
+//import { Creatable } from "react-select";
+import Creatable from 'react-select/lib/Creatable';
 import VirtualizedSelect from "react-virtualized-select";
 import { SingleDatePicker, toMomentObject } from 'react-dates';
 import 'react-dates/initialize';
@@ -44,7 +45,7 @@ class Home extends React.Component
                     isSearchable
                     isValidNewOption={isValidNewOption}
                     placeholder={'Search product'}
-                    selectComponent={Creatable}
+                    //selectComponent={Creatable}
                     optionHeight={64}
                     maxHeight={500}
                     clearable={false}
@@ -60,7 +61,6 @@ class Home extends React.Component
                         numberOfMonths={1}
                         displayFormat="D MMM YYYY"
                         customInputIcon={<img src='/icons/calendar.svg' width="32px" />}
-                        //customInputIconPosition="before"
                         readOnly
                         withPortal
                         isOutsideRange={this.isOutsideRange.bind(this)}

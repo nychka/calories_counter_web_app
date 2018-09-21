@@ -11,8 +11,10 @@ export class ProductsProvider extends React.Component{
         const consumedProducts = this.getItem('consumedProducts');
         const products = this.getItem('products');
         const moment = this.getMoment();
+        const searchPlaceholder = <span>Type product title here...</span>;
 
         this.state = {
+            lang: 'en',
             currentPage: 1,
             totalPages: 0,
             currentAmount: 0,
@@ -24,7 +26,7 @@ export class ProductsProvider extends React.Component{
             moment: moment,
             consumedProducts: consumedProducts,
             consumedCalories: this.countConsumedCalories(consumedProducts),
-            selectedProduct: {value: '', label: <span>Type product title here...</span>},
+            selectedProduct: {value: '', label: searchPlaceholder},
             fetch: this.fetch.bind(this),
             addCalories: this.addCalories.bind(this),
             findProductByValue: this.findProductByValue.bind(this),
@@ -138,18 +140,22 @@ export class ProductsProvider extends React.Component{
     buildProductOption = (product) => {
         const label = <span>
                 <img width={'48px'} height={'48px'} src={product.image} />
-                {product.lang.en}
+                {product.lang[this.state.lang]}
         </span>;
-        return { value: product.lang.en, label: label };
+        return { value: product.lang[this.state.lang], label: label, lang: product.lang };
     }
 
     buildProductsOptions = () => {
-        console.log('building products options...');
         const self = this;
         const options = this.state.products.map(product => {
             return self.buildProductOption(product);   
         });
-        self.setState({ productsOptions: options });
+        const filterOptions = createFilterOptions({
+            indexes: [['lang', 'ua'], ['lang', 'ru'], ['lang', 'en']],
+            options: options
+        });
+
+        self.setState({ productsOptions: options, filterOptions: filterOptions });
     }
 
     fetch(){
