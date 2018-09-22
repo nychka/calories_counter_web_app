@@ -41,11 +41,10 @@ class Home extends React.Component
                     filterOptions={this.props.filterOptions}
                     options={this.props.productsOptions}
                     className={'search-products'}
-                    onCreateOption={this.props.handleCreate}
                     isSearchable
                     isValidNewOption={isValidNewOption}
                     placeholder={'Search product'}
-                    //selectComponent={Creatable}
+                    onInputChange={this.props.onInputChange}
                     optionHeight={64}
                     maxHeight={500}
                     clearable={false}

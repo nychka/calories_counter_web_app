@@ -15,6 +15,7 @@ export class ProductsProvider extends React.Component{
 
         this.state = {
             lang: 'en',
+            searchIndexes: [['lang', 'ua'], ['lang', 'ru'], ['lang', 'en']],
             currentPage: 1,
             totalPages: 0,
             currentAmount: 0,
@@ -33,11 +34,11 @@ export class ProductsProvider extends React.Component{
             findMealByValue: this.findMealByValue.bind(this),
             findMealBy: this.findMealBy.bind(this),
             pickProductHandler: this.pickProductHandler.bind(this),
-            handleCreate: this.handleCreate.bind(this),
             pickMoment: this.pickMoment.bind(this),
             isPresentMoment: this.isPresentMoment.bind(this),
             removeHandler: this.removeHandler.bind(this),
-            addProduct: this.addProduct.bind(this)
+            addProduct: this.addProduct.bind(this),
+            onInputChange: this.onInputChange.bind(this)
         }
     }
 
@@ -70,13 +71,11 @@ export class ProductsProvider extends React.Component{
     }
 
     pickProductHandler(selected){
-        if(selected && selected.value && selected.value.length >= 2){
+        if(selected.action === 'create-option'){
+            history.push({pathname: '/products/new', state: { title: selected.value }});
+        }else if(selected.action === 'select-option' && selected.value.length >= 2){
             history.push({pathname: '/meals/new', state: { uuid: selected.value }});
         }
-    }
-
-    handleCreate(title){
-        history.push({pathname: '/products/new', state: { title: title }});
     }
 
     countConsumedCalories = (consumedProducts) => {
@@ -137,12 +136,36 @@ export class ProductsProvider extends React.Component{
         return this.state.consumedProducts.find(product => product[key] === value);
     }
 
-    buildProductOption = (product) => {
+    buildProductOption = (product, action = 'select-option') => {
         const label = <span>
                 <img width={'48px'} height={'48px'} src={product.image} />
                 {product.lang[this.state.lang]}
         </span>;
-        return { value: product.lang[this.state.lang], label: label, lang: product.lang };
+        return { value: product.lang[this.state.lang], label: label, lang: product.lang, action: action };
+    }
+
+    onInputChange = (newCreateValue) => {
+        console.log(newCreateValue);
+
+        const getUpdatedOptions = (options, newCreateValue) => {
+            options[0] = this.buildCreateOption(newCreateValue);
+            return options;
+        }
+        const oldOptions = Object.assign([], this.state.productsOptions);
+        const newOptions = getUpdatedOptions(oldOptions, newCreateValue);
+
+        const filterOptions = createFilterOptions({
+            indexes: this.state.searchIndexes,
+            options: newOptions
+        });
+    
+        this.setState({productsOptions: newOptions, filterOptions: filterOptions});
+    }
+
+    buildCreateOption = (newCreateValue) => {
+        const labelText = newCreateValue.length ? `Create product "${newCreateValue}"` : 'Create product';
+        const label = <span>{labelText}</span>;
+        return { value: newCreateValue, label: label, lang: { en: newCreateValue}, action: 'create-option' };
     }
 
     buildProductsOptions = () => {
@@ -150,8 +173,10 @@ export class ProductsProvider extends React.Component{
         const options = this.state.products.map(product => {
             return self.buildProductOption(product);   
         });
+        options.unshift(this.buildCreateOption(''));
+    
         const filterOptions = createFilterOptions({
-            indexes: [['lang', 'ua'], ['lang', 'ru'], ['lang', 'en']],
+            indexes: this.state.searchIndexes,
             options: options
         });
 
