@@ -164,7 +164,10 @@ export class ProductsProvider extends React.Component{
 
     buildCreateOption = (newCreateValue) => {
         const labelText = newCreateValue.length ? `Create product "${newCreateValue}"` : 'Create product';
-        const label = <span>{labelText}</span>;
+        const label = <span>
+            <img width={'48px'} height={'48px'} src={'/icons/product-placeholder.png'} />
+            {labelText}
+        </span>;
         return { value: newCreateValue, label: label, lang: { en: newCreateValue}, action: 'create-option' };
     }
 

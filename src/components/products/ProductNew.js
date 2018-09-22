@@ -9,7 +9,7 @@ class ProductNew extends React.Component{
 
         this.state = {
             isConsumed: true,
-            product: { image: '', lang: { en: ''}, nutrition: { calories: '', weight: 100 }},
+            product: { image: '/icons/product-placeholder.png', lang: { en: ''}, nutrition: { calories: '', weight: 100 }},
         }
     }
     setCalories(e){
