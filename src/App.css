@@ -66,13 +66,13 @@
   width: 557px;
   border: 1px solid #ccc;
   margin: auto;
-  margin-top: 10rem;
+  margin-top: 8rem;
   background-color: #e9ecef;
 }
 
 .meal-new-top{
-  width: 14rem;
-  height: 14rem;
+  width: 10rem;
+  height: 10rem;
   margin-top: -7rem;
   box-shadow: 0px 5px 10px #cccccc;
   border-radius: 25px;
@@ -87,7 +87,7 @@
 
 .meal-new-title {
   font-family: Arial;
-  font-size: 69px;
+  font-size: 3rem;
   font-weight: bold;
   font-style: normal;
   font-stretch: normal;
@@ -99,7 +99,8 @@
 
 .product-new-title {
   font-family: Arial;
-  font-size: 2rem;
+  font-size: 3.5rem;
+  height: 5rem;
   font-weight: bold;
   font-style: normal;
   font-stretch: normal;
@@ -141,12 +142,22 @@
 }
 
 .meal-new-square {
-  width: 242px;
-  height: 121px;
-  border: 1px solid #cccccc;
+  height: 6rem;
+  width: 5rem;
+  /* border: 1px solid #cccccc; */
   font-size: 3rem;
   text-align: center;
   margin: auto;
+}
+
+.meal-new-square img {
+  width: 4rem;
+  height: 4rem;
+}
+
+.meal-new-square-input {
+  width: 10rem;
+  margin-right: 1rem;
 }
 
 #date-picker {

@@ -1,6 +1,7 @@
 import React from "react";
 import {axio, defaultHeaders, history, isRightMoment} from "../../utils";
 import { toMomentObject } from 'react-dates';
+import createFilterOptions from 'react-select-fast-filter-options'
 
 export const ProductsContext = React.createContext({});
 
@@ -10,8 +11,11 @@ export class ProductsProvider extends React.Component{
         const consumedProducts = this.getItem('consumedProducts');
         const products = this.getItem('products');
         const moment = this.getMoment();
+        const searchPlaceholder = <span>Type product title here...</span>;
 
         this.state = {
+            lang: 'en',
+            searchIndexes: [['lang', 'ua'], ['lang', 'ru'], ['lang', 'en']],
             currentPage: 1,
             totalPages: 0,
             currentAmount: 0,
@@ -19,21 +23,22 @@ export class ProductsProvider extends React.Component{
             caloriesLimit: 2000,
             products: products,
             productsOptions: [],
+            filterOptions: [],
             moment: moment,
             consumedProducts: consumedProducts,
             consumedCalories: this.countConsumedCalories(consumedProducts),
-            selectedProduct: {value: '', label: <span>Type product title here...</span>},
+            selectedProduct: {value: '', label: searchPlaceholder},
             fetch: this.fetch.bind(this),
             addCalories: this.addCalories.bind(this),
             findProductByValue: this.findProductByValue.bind(this),
             findMealByValue: this.findMealByValue.bind(this),
             findMealBy: this.findMealBy.bind(this),
             pickProductHandler: this.pickProductHandler.bind(this),
-            handleCreate: this.handleCreate.bind(this),
             pickMoment: this.pickMoment.bind(this),
             isPresentMoment: this.isPresentMoment.bind(this),
             removeHandler: this.removeHandler.bind(this),
-            addProduct: this.addProduct.bind(this)
+            addProduct: this.addProduct.bind(this),
+            onInputChange: this.onInputChange.bind(this)
         }
     }
 
@@ -61,17 +66,16 @@ export class ProductsProvider extends React.Component{
 
     showHandler = (e) => {
         let id = e.target.parentElement.getAttribute('key');
-        console.log('meal', id); alert('FOO');
         
         history.push({pathname: '/meals/' + id});
     }
 
     pickProductHandler(selected){
-        history.push({pathname: '/meals/new', state: { uuid: selected.value }});
-    }
-
-    handleCreate(title){
-        history.push({pathname: '/products/new', state: { title: title }});
+        if(selected.action === 'create-option'){
+            history.push({pathname: '/products/new', state: { title: selected.value }});
+        }else if(selected.action === 'select-option' && selected.value.length >= 2){
+            history.push({pathname: '/meals/new', state: { uuid: selected.value }});
+        }
     }
 
     countConsumedCalories = (consumedProducts) => {
@@ -111,8 +115,13 @@ export class ProductsProvider extends React.Component{
         const option = this.buildProductOption(product);
         options.push(option);
         products.push(product);
+        const filterOptions = createFilterOptions({ options });
 
-        this.setState({productsOptions: options, products: products});
+        this.setState({
+            productsOptions: options,
+            filterOptions: filterOptions,
+            products: products
+        });
     }
 
     findProductByValue(value){
@@ -127,18 +136,54 @@ export class ProductsProvider extends React.Component{
         return this.state.consumedProducts.find(product => product[key] === value);
     }
 
-    buildProductOption = (product) => {
-        const label = <span><img width={'48px'} height={'48px'} src={product.image} />{product.lang.en}</span>;
-        return { value: product.lang.en, label: label };
+    buildProductOption = (product, action = 'select-option') => {
+        const label = <span>
+                <img width={'48px'} height={'48px'} src={product.image} />
+                {product.lang[this.state.lang]}
+        </span>;
+        return { value: product.lang[this.state.lang], label: label, lang: product.lang, action: action };
+    }
+
+    onInputChange = (newCreateValue) => {
+        console.log(newCreateValue);
+
+        const getUpdatedOptions = (options, newCreateValue) => {
+            options[0] = this.buildCreateOption(newCreateValue);
+            return options;
+        }
+        const oldOptions = Object.assign([], this.state.productsOptions);
+        const newOptions = getUpdatedOptions(oldOptions, newCreateValue);
+
+        const filterOptions = createFilterOptions({
+            indexes: this.state.searchIndexes,
+            options: newOptions
+        });
+    
+        this.setState({productsOptions: newOptions, filterOptions: filterOptions});
+    }
+
+    buildCreateOption = (newCreateValue) => {
+        const labelText = newCreateValue.length ? `Create product "${newCreateValue}"` : 'Create product';
+        const label = <span>
+            <img width={'48px'} height={'48px'} src={'/icons/product-placeholder.png'} />
+            {labelText}
+        </span>;
+        return { value: newCreateValue, label: label, lang: { en: newCreateValue}, action: 'create-option' };
     }
 
     buildProductsOptions = () => {
-        console.log('building products options...');
         const self = this;
         const options = this.state.products.map(product => {
             return self.buildProductOption(product);   
         });
-        self.setState({ productsOptions: options });
+        options.unshift(this.buildCreateOption(''));
+    
+        const filterOptions = createFilterOptions({
+            indexes: this.state.searchIndexes,
+            options: options
+        });
+
+        self.setState({ productsOptions: options, filterOptions: filterOptions });
     }
 
     fetch(){

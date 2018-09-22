@@ -2,10 +2,13 @@ import React from 'react';
 import { Router } from 'react-router-dom';
 import ProductCard from './products/ProductCard';
 import {isValidNewOption, isRightMoment, history} from "../utils";
-import Creatable from "react-select/lib/Creatable";
+//import { Creatable } from "react-select";
+import Creatable from 'react-select/lib/Creatable';
+import VirtualizedSelect from "react-virtualized-select";
 import { SingleDatePicker, toMomentObject } from 'react-dates';
 import 'react-dates/initialize';
 import 'react-dates/lib/css/_datepicker.css';
+import "react-virtualized-select/styles.css";
 
 class Home extends React.Component
 {
@@ -32,15 +35,19 @@ class Home extends React.Component
         return(
             <div className='d-flex flex-column'>
                 <div id={'select-products'}>
-                    <Creatable
+                    <VirtualizedSelect
                     value={this.props.selectedProduct}
                     onChange={this.props.pickProductHandler}
+                    filterOptions={this.props.filterOptions}
                     options={this.props.productsOptions}
                     className={'search-products'}
-                    onCreateOption={this.props.handleCreate}
                     isSearchable
                     isValidNewOption={isValidNewOption}
                     placeholder={'Search product'}
+                    onInputChange={this.props.onInputChange}
+                    optionHeight={64}
+                    maxHeight={500}
+                    clearable={false}
                    />
                 </div>
                 <div id={'select-date'} className={'d-flex mt-3 md-3'}>
@@ -53,7 +60,6 @@ class Home extends React.Component
                         numberOfMonths={1}
                         displayFormat="D MMM YYYY"
                         customInputIcon={<img src='/icons/calendar.svg' width="32px" />}
-                        //customInputIconPosition="before"
                         readOnly
                         withPortal
                         isOutsideRange={this.isOutsideRange.bind(this)}

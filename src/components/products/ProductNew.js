@@ -8,8 +8,8 @@ class ProductNew extends React.Component{
         super(props);
 
         this.state = {
-            isConsumed: true,
-            product: { image: '', lang: { en: ''}, nutrition: { calories: '', weight: 100 }},
+            willConsume: true,
+            product: { image: '/icons/product-placeholder.png', lang: { en: ''}, nutrition: { calories: '', weight: 100 }},
         }
     }
     setCalories(e){
@@ -39,14 +39,14 @@ class ProductNew extends React.Component{
     save = () => {
         const product = this.state.product;
         this.props.addProduct(product);
-        const path = this.state.isConsumed ? '/meals/new' : '/';
+        const path = this.state.willConsume ? '/meals/new' : '/';
         history.push({pathname: path, state: { uuid: product.lang.en, product: product }});
     }
 
-    setIsConsumed(e){
+    setWillConsume(e){
        console.log(e.target.value);
        
-       this.setState({isConsumed: !this.state.isConsumed});
+       this.setState({willConsume: !this.state.willConsume});
     }
     
 
@@ -74,17 +74,30 @@ class ProductNew extends React.Component{
                 <div className={'d-flex flex-row mb-5 align-self-center meal-new-title'}>
                     <Input className={'d-flex flex-column product-new-title'} type='text' placeholder={'e.g. apple'} onChange={this.setTitle.bind(this)} value={this.state.product.lang.en}/>
                 </div>
-                <div className={'d-flex jutify-content-around flex-row mb-5'}>
-                    <Input className={'d-flex flex-column meal-new-square'} type='number' onChange={this.setCalories.bind(this)} value={this.state.product.nutrition.calories}/>
-                    <Input className={'d-flex flex-column meal-new-square'} type='number' disabled value={this.state.product.nutrition.weight}/>
+                <div className={'d-flex jutify-content-center align-self-center flex-row mb-5'}>
+                    
+                    <div className={'d-flex flex-row'}>
+                        <div addonType="prepend" className={'d-flex align-items-center justify-content-center flex-column meal-new-square'}>
+                            <img src={'/icons/food-scale-tool.svg'} alt={'calorie'} />
+                        </div>
+                        <Input className={'d-flex flex-column meal-new-square meal-new-square-input'} type='number' disabled value={this.state.product.nutrition.weight}/>
+                    </div>
+
+                    <div className={'d-flex flex-row'}>
+                        <div addonType="prepend" className={'d-flex align-items-center justify-content-center flex-column meal-new-square'}>
+                            <img src={'/icons/calorie.svg'} alt={'calorie'} />
+                        </div>
+                        <Input className={'d-flex flex-column meal-new-square meal-new-square-input'} type='text' onChange={this.setCalories.bind(this)} value={this.state.product.nutrition.calories}/>
+                    </div>
+        
                 </div>
                 <FormGroup check>
-                    <Label for="isConsumed">
-                        <Input type='checkbox' id='isConsumed' checked={this.state.isConsumed} value={this.state.isConsumed} onChange={this.setIsConsumed.bind(this)} />
+                    <Label for="willConsume">
+                        <Input type='checkbox' id='willConsume' checked={this.state.willConsume} value={this.state.willConsume} onChange={this.setWillConsume.bind(this)} />
                         Add meal after
                     </Label>
                 </FormGroup>
-                <div className={'d-flex justify-content-center meal-new-bottom'} onClick={this.save.bind(this)}>Save</div>
+                <div className={'d-flex justify-content-center meal-new-bottom'} onClick={this.save.bind(this)}>{this.state.willConsume ? 'Add and consume' : 'Add'}</div>
             </div>
         )
     }

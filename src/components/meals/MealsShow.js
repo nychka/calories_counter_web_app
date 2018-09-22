@@ -56,15 +56,25 @@ class MealsShow extends React.Component{
                  <img src={product.image} alt="Card image cap" />
                 </div>
                 <div className={'d-flex flex-row mb-5 align-self-center meal-new-title'}>{product.lang.en}</div>
-                <div className={'d-flex jutify-content-around flex-row mb-5'}>
-                    <Input className={'d-flex flex-column meal-new-square'} disabled type='number' value={this.state.product.nutrition.weight}/>
-                    <Input className={'d-flex flex-column meal-new-square'} disabled type='text' value={parseInt(this.state.product.nutrition.calories) ? this.state.product.nutrition.calories + ' kkal' : ':P'}/>
-                </div>
-                <div className={'d-flex justify-content-stretch'}>
-                    <div className={'d-flex justify-content-center meal-cancel-button'}>
-                        <Link to={'/'}> Cancel</Link>
+                <div className={'d-flex jutify-content-center align-self-center flex-row mb-5'}>
+                    
+                    <div className={'d-flex flex-row'}>
+                        <div addonType="prepend" className={'d-flex align-items-center justify-content-center flex-column meal-new-square'}>
+                            <img src={'/icons/food-scale-tool.svg'} alt={'calorie'} />
+                        </div>
+                        <Input className={'d-flex flex-column meal-new-square meal-new-square-input'} type='number' disabled value={this.state.product.nutrition.weight}/>
                     </div>
-                    {/* <div className={'d-flex justify-content-center meal-save-button'} onClick={() => {}}>Save</div> */}
+
+                    <div className={'d-flex flex-row'}>
+                        <div addonType="prepend" className={'d-flex align-items-center justify-content-center flex-column meal-new-square'}>
+                            <img src={'/icons/calorie.svg'} alt={'calorie'} />
+                        </div>
+                        <Input className={'d-flex flex-column meal-new-square meal-new-square-input'} disabled type='text' value={this.state.product.nutrition.calories}/>
+                    </div>
+        
+                </div>
+                <div className={'d-flex justify-content-center meal-new-bottom'} onClick={() => { history.push({pathname: '/'})}}>
+                    Cancel
                 </div>
             </div>
         )

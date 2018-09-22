@@ -3,6 +3,7 @@ import { Route, Switch } from 'react-router-dom';
 import Header from './components/Header';
 import Home from './components/Home';
 import './App.css';
+import './ReactSelect.css';
 import { ProductsContext, ProductsProvider } from './components/products/ProductsProvider';
 import FacebookLogin from 'react-facebook-login';
 import GoogleLogin from 'react-google-login'

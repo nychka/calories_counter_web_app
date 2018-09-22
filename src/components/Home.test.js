@@ -32,12 +32,13 @@ describe('<Home />', () => {
     const todayMoment = () => toMomentObject(new Date());
 
     const subject = (options = {}) => {
-        const defaults = { consumed: [], moment: todayMoment() };
+        const defaults = { products: [], consumed: [], moment: todayMoment() };
         const settings = Object.assign(defaults, options);
 
         ProductsProvider.prototype.getMoment = jest.fn(() => settings.moment);
         window.localStorage.setItem('consumedProducts', JSON.stringify(settings.consumed));
-        
+        window.localStorage.setItem('products', JSON.stringify(settings.products));
+
         return mount(
             <ProductsProvider>
                 <ProductsContext.Consumer>
@@ -54,7 +55,7 @@ describe('<Home />', () => {
         for(let i = 0; i < count; i += 1) {
             let consumedProduct = Object.assign({}, product);
             consumedProduct.id = i;
-            consumedProduct.consumedAt = time;
+            consumedProduct.consumedAt = time + i;
             products.push(consumedProduct);
         }
         return products;
