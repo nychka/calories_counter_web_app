@@ -15,13 +15,18 @@ class Header extends React.Component
         };
     }
 
+    pickToday = () => {
+        console.log('click');
+        this.props.pickMoment(this.props.todayMoment);
+    }
+
     render(){
         const progress = this.props.consumedCalories / (this.props.caloriesLimit / 100);
         return(
             <div className={'mb-3'}>
                 <Navbar className="">
                     <Link to="/">
-                        <div className='brand d-flex justify-content-left'>{ this.siteName }</div>
+                        <div onClick={this.pickToday.bind(this)} className='brand d-flex justify-content-left'>{ this.siteName }</div>
                     </Link>
                     <div className={'d-flex justify-content-center brand'}>{this.props.consumedCalories} / {this.props.caloriesLimit}</div>
                     <div className={'d-flex justify-content-right'}>Sign in</div>

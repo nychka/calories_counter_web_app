@@ -24,12 +24,6 @@ class Home extends React.Component
         this.consumedDays.push(toMomentObject(new Date()));
     }
 
-    componentDidUpdate(props){
-        if(props.moment === this.todayMoment) return false;
-        console.log(props);
-        //this.props.pickMoment(this.todayMoment);
-    }
-
     isOutsideRange = (day) => {
         return !this.consumedDays.some(consumedDay => isRightMoment(consumedDay, day));
     }

@@ -24,6 +24,7 @@ export class ProductsProvider extends React.Component{
             products: products,
             productsOptions: [],
             filterOptions: [],
+            todayMoment: todayMoment,
             moment: todayMoment,
             consumedProducts: consumedProducts,
             consumedCalories: 0,
@@ -111,17 +112,14 @@ export class ProductsProvider extends React.Component{
 
     addCalories(product){
         this.setState((prevState) => {
-            if(!prevState.moment){
-                alert.error('moment is not set! Pick right moment;)');
-                return false;
-            }
-            const consumedProducts = prevState.consumedProducts;
+            const consumedProducts = Object.assign([], prevState.consumedProducts);
             product.consumedAt = new Date().getTime();
             consumedProducts.push(product);
-            const consumedCalories = this.countConsumedCalories(consumedProducts);
             this.saveItem('consumedProducts', consumedProducts);
 
-            return { consumedProducts: consumedProducts, consumedCalories: consumedCalories }
+            return { consumedProducts: consumedProducts }
+        }, () => {
+            this.setConsumedCaloriesByDate(this.state.moment);
         });
         history.push('/');
     }

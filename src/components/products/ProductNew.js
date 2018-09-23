@@ -9,12 +9,13 @@ class ProductNew extends React.Component{
 
         this.state = {
             willConsume: true,
-            product: { image: '/icons/product-placeholder.png', lang: { en: ''}, nutrition: { calories: '', weight: 100 }},
+            product: { image: '/icons/product-placeholder.png', lang: { en: ''}, nutrition: { calories: 0, weight: 100 }},
         }
     }
     setCalories(e){
+        const value = e.target.value;
         const product = Object.assign({}, this.state.product);
-        const calories = parseInt(e.target.value, 10);
+        const calories = value.length ? parseInt(value, 10) : '';
         product.nutrition.calories = calories;
         
         this.setState({ product: product });
@@ -85,7 +86,7 @@ class ProductNew extends React.Component{
                         <div className={'d-flex align-items-center justify-content-center flex-column meal-new-square'}>
                             <img src={'/icons/calorie.svg'} alt={'calorie'} />
                         </div>
-                        <Input className={'d-flex flex-column meal-new-square meal-new-square-input'} type='text' onChange={this.setCalories.bind(this)} value={this.state.product.nutrition.calories}/>
+                        <Input className={'d-flex flex-column meal-new-square meal-new-square-input'} type='number' min="0" max="2000" onChange={this.setCalories.bind(this)} value={this.state.product.nutrition.calories}/>
                     </div>
         
                 </div>
