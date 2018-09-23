@@ -2,8 +2,6 @@ import React from 'react';
 import { Router } from 'react-router-dom';
 import ProductCard from './products/ProductCard';
 import {isValidNewOption, isRightMoment, history} from "../utils";
-//import { Creatable } from "react-select";
-import Creatable from 'react-select/lib/Creatable';
 import VirtualizedSelect from "react-virtualized-select";
 import { SingleDatePicker, toMomentObject } from 'react-dates';
 import 'react-dates/initialize';
@@ -17,12 +15,27 @@ class Home extends React.Component
         this.state = {
             focused: false
         }
+        this.todayMoment = toMomentObject(new Date());
         this.isRightMoment = (moment) => isRightMoment(moment, this.props.moment);
+    }
+
+    componentDidMount(){
         this.consumedDays = this.props.consumedProducts.map(product => toMomentObject(new Date(product.consumedAt)));
+        this.consumedDays.push(toMomentObject(new Date()));
+    }
+
+    componentDidUpdate(props){
+        if(props.moment === this.todayMoment) return false;
+        console.log(props);
+        //this.props.pickMoment(this.todayMoment);
     }
 
     isOutsideRange = (day) => {
         return !this.consumedDays.some(consumedDay => isRightMoment(consumedDay, day));
+    }
+
+    isDayHighlighted = (day) => {
+        return isRightMoment(day, this.todayMoment);
     }
 
     render(){
@@ -34,7 +47,7 @@ class Home extends React.Component
 
         return(
             <div className='d-flex flex-column'>
-                <div id={'select-products'}>
+                {this.props.isPresentMoment() && <div id={'select-products'}>
                     <VirtualizedSelect
                     value={this.props.selectedProduct}
                     onChange={this.props.pickProductHandler}
@@ -49,7 +62,7 @@ class Home extends React.Component
                     maxHeight={500}
                     clearable={false}
                    />
-                </div>
+                </div> }
                 <div id={'select-date'} className={'d-flex mt-3 md-3'}>
                     <SingleDatePicker
                         date={this.props.moment}
@@ -59,10 +72,11 @@ class Home extends React.Component
                         id="date-picker"
                         numberOfMonths={1}
                         displayFormat="D MMM YYYY"
-                        customInputIcon={<img src='/icons/calendar.svg' width="32px" />}
+                        customInputIcon={<img src='/icons/calendar.svg' width="32px" alt='calendar' />}
                         readOnly
                         withPortal
                         isOutsideRange={this.isOutsideRange.bind(this)}
+                        isDayHighlighted={this.isDayHighlighted.bind(this)}
                     />
                 </div>
                 <div className={'d-flex flex-wrap align-items-end mt-3 consumed-products-wrapper'}>

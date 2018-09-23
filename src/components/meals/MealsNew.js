@@ -1,6 +1,6 @@
 import React from 'react';
 import { withRouter } from 'react-router-dom';
-import { Input, InputGroup, InputGroupAddon } from 'reactstrap';
+import { Input } from 'reactstrap';
 
 class MealsNew extends React.Component{
     constructor(props){
@@ -13,7 +13,7 @@ class MealsNew extends React.Component{
     }
     setCalories(e){
         const product = Object.assign({}, this.state.product);
-        const updatedWeight = parseInt(e.target.value);
+        const updatedWeight = parseInt(e.target.value, 10);
 
         product.nutrition.calories = updatedWeight ? Math.round(updatedWeight * product.nutrition.ratio) : '';
         product.nutrition.weight = updatedWeight;
@@ -23,8 +23,8 @@ class MealsNew extends React.Component{
 
     calculate(){
         const product = Object.assign({}, this.state.product);
-        const weight = product.nutrition.hasOwnProperty('weight') ? parseInt(product.nutrition.weight) : 100;
-        const calories = parseInt(product.nutrition.calories);
+        const weight = product.nutrition.hasOwnProperty('weight') ? parseInt(product.nutrition.weight, 10) : 100;
+        const calories = parseInt(product.nutrition.calories, 10);
 
         if(weight && calories){
             this.props.addCalories(product);
@@ -57,23 +57,23 @@ class MealsNew extends React.Component{
         return (
             <div className={'d-flex flex-column meal-new '}>
                 <div className={'d-flex flex-row mb-5 align-self-center justify-content-center meal-new-top'}>
-                 <img src={product.image} alt="Card image cap" />
+                 <img src={product.image} alt="Card" />
                 </div>
                 <div className={'d-flex flex-row mb-5 align-self-center meal-new-title'}>{product.lang.en}</div>
                 <div className={'d-flex jutify-content-center align-self-center flex-row mb-5'}>
                     
                     <div className={'d-flex flex-row'}>
-                        <div addonType="prepend" className={'d-flex align-items-center justify-content-center flex-column meal-new-square'}>
+                        <div className={'d-flex align-items-center justify-content-center flex-column meal-new-square'}>
                             <img src={'/icons/food-scale-tool.svg'} alt={'calorie'} />
                         </div>
                         <Input className={'d-flex flex-column meal-new-square meal-new-square-input'} type='number' min="0" step="50" onChange={this.setCalories.bind(this)} value={this.state.weight}/>
                     </div>
 
                     <div className={'d-flex flex-row'}>
-                        <div addonType="prepend" className={'d-flex align-items-center justify-content-center flex-column meal-new-square'}>
+                        <div className={'d-flex align-items-center justify-content-center flex-column meal-new-square'}>
                             <img src={'/icons/calorie.svg'} alt={'calorie'} />
                         </div>
-                        <Input className={'d-flex flex-column meal-new-square meal-new-square-input'} disabled type='text' value={parseInt(this.state.product.nutrition.calories) ? this.state.product.nutrition.calories : ':P'}/>
+                        <Input className={'d-flex flex-column meal-new-square meal-new-square-input'} disabled type='text' value={parseInt(this.state.product.nutrition.calories, 10) ? this.state.product.nutrition.calories : ':P'}/>
                     </div>
         
                 </div>

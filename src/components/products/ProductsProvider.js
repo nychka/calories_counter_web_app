@@ -10,8 +10,8 @@ export class ProductsProvider extends React.Component{
         super(props);
         const consumedProducts = this.getItem('consumedProducts');
         const products = this.getItem('products');
-        const moment = this.getMoment();
         const searchPlaceholder = <span>Type product title here...</span>;
+        const todayMoment = toMomentObject(new Date());
 
         this.state = {
             lang: 'en',
@@ -24,9 +24,9 @@ export class ProductsProvider extends React.Component{
             products: products,
             productsOptions: [],
             filterOptions: [],
-            moment: moment,
+            moment: todayMoment,
             consumedProducts: consumedProducts,
-            consumedCalories: this.countConsumedCalories(consumedProducts),
+            consumedCalories: 0,
             selectedProduct: {value: '', label: searchPlaceholder},
             fetch: this.fetch.bind(this),
             addCalories: this.addCalories.bind(this),
@@ -44,23 +44,38 @@ export class ProductsProvider extends React.Component{
 
     componentDidMount(){
         this.fetch();
+        this.pickMoment(this.state.moment);
     }
 
     isPresentMoment = () => isRightMoment(toMomentObject(new Date()), this.state.moment);
 
+    consumedProductsByDate = (date) => (
+        this.state.consumedProducts.filter(product => {
+            return isRightMoment(toMomentObject(new Date(product.consumedAt)), date)
+        })
+    )
+
+    setConsumedCaloriesByDate = (date) => {
+        const products = this.consumedProductsByDate(date);
+        const calories = this.countConsumedCalories(products);
+        this.setState({consumedCalories: calories});
+    }
+
     pickMoment(date){
+        this.setConsumedCaloriesByDate(date);
         this.setState({moment: date});
     }
 
     removeHandler = (product) => {
-        const id = parseInt(product.target.parentElement.getAttribute('data-id'));
+        const id = parseInt(product.target.parentElement.getAttribute('data-id'), 10);
 
         this.setState((prevState) => {
             const consumedProducts = prevState.consumedProducts.filter(item => item.consumedAt !== id); 
-            const consumedCalories = this.countConsumedCalories(consumedProducts);
             this.saveItem('consumedProducts', consumedProducts);
 
-            return { consumedProducts: consumedProducts, consumedCalories: consumedCalories };
+            return { consumedProducts: consumedProducts };
+        }, () => {
+            this.setConsumedCaloriesByDate(this.state.moment);
         });
     }
 
@@ -71,6 +86,8 @@ export class ProductsProvider extends React.Component{
     }
 
     pickProductHandler(selected){
+        if(!selected) return false;
+
         if(selected.action === 'create-option'){
             history.push({pathname: '/products/new', state: { title: selected.value }});
         }else if(selected.action === 'select-option' && selected.value.length >= 2){
@@ -80,7 +97,7 @@ export class ProductsProvider extends React.Component{
 
     countConsumedCalories = (consumedProducts) => {
         let consumedCalories = 0;
-        consumedProducts.map(product => (consumedCalories += parseInt(product.nutrition.calories)));
+        consumedProducts.map(product => (consumedCalories += parseInt(product.nutrition.calories, 10)));
         return consumedCalories;
     }
 
@@ -138,7 +155,7 @@ export class ProductsProvider extends React.Component{
 
     buildProductOption = (product, action = 'select-option') => {
         const label = <span>
-                <img width={'48px'} height={'48px'} src={product.image} />
+                <img width={'48px'} height={'48px'} src={product.image} alt='product-option' />
                 {product.lang[this.state.lang]}
         </span>;
         return { value: product.lang[this.state.lang], label: label, lang: product.lang, action: action };
@@ -165,7 +182,7 @@ export class ProductsProvider extends React.Component{
     buildCreateOption = (newCreateValue) => {
         const labelText = newCreateValue.length ? `Create product "${newCreateValue}"` : 'Create product';
         const label = <span>
-            <img width={'48px'} height={'48px'} src={'/icons/product-placeholder.png'} />
+            <img width={'48px'} height={'48px'} src={'/icons/product-placeholder.png'} alt='product-placeholder' />
             {labelText}
         </span>;
         return { value: newCreateValue, label: label, lang: { en: newCreateValue}, action: 'create-option' };

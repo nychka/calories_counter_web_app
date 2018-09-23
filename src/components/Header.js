@@ -20,13 +20,13 @@ class Header extends React.Component
         return(
             <div className={'mb-3'}>
                 <Navbar className="">
-                    <Link tag={Link} to="/">
+                    <Link to="/">
                         <div className='brand d-flex justify-content-left'>{ this.siteName }</div>
                     </Link>
                     <div className={'d-flex justify-content-center brand'}>{this.props.consumedCalories} / {this.props.caloriesLimit}</div>
                     <div className={'d-flex justify-content-right'}>Sign in</div>
                 </Navbar>
-                <Line percent={progress} className={'rounded'} strokeWidth="0.4" strokeColor={ this.props.isPresentMoment() ? '#42d8d8' : 'yellow' } />
+                <Line percent={progress} className={'rounded'} strokeWidth="0.4" strokeColor={ this.props.isPresentMoment() ? '#42d8d8' : '#267979' } />
             </div>
         );
     }

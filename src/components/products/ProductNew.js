@@ -14,7 +14,7 @@ class ProductNew extends React.Component{
     }
     setCalories(e){
         const product = Object.assign({}, this.state.product);
-        const calories = parseInt(e.target.value);
+        const calories = parseInt(e.target.value, 10);
         product.nutrition.calories = calories;
         
         this.setState({ product: product });
@@ -30,7 +30,7 @@ class ProductNew extends React.Component{
 
     setWeight(e){
         const product = Object.assign({}, this.state.product);
-        const weight = parseInt(e.target.value);
+        const weight = parseInt(e.target.value, 10);
         product.nutrition.weight = weight;
         
         this.setState({ product: product });
@@ -44,8 +44,6 @@ class ProductNew extends React.Component{
     }
 
     setWillConsume(e){
-       console.log(e.target.value);
-       
        this.setState({willConsume: !this.state.willConsume});
     }
     
@@ -69,7 +67,7 @@ class ProductNew extends React.Component{
         return (
             <div className={'d-flex flex-column meal-new '}>
                 <div className={'d-flex flex-row mb-5 align-self-center justify-content-center meal-new-top'}>
-                 <img src={product.image} alt="Card image cap" />
+                 <img src={product.image} alt="Card" />
                 </div>
                 <div className={'d-flex flex-row mb-5 align-self-center meal-new-title'}>
                     <Input className={'d-flex flex-column product-new-title'} type='text' placeholder={'e.g. apple'} onChange={this.setTitle.bind(this)} value={this.state.product.lang.en}/>
@@ -77,14 +75,14 @@ class ProductNew extends React.Component{
                 <div className={'d-flex jutify-content-center align-self-center flex-row mb-5'}>
                     
                     <div className={'d-flex flex-row'}>
-                        <div addonType="prepend" className={'d-flex align-items-center justify-content-center flex-column meal-new-square'}>
+                        <div className={'d-flex align-items-center justify-content-center flex-column meal-new-square'}>
                             <img src={'/icons/food-scale-tool.svg'} alt={'calorie'} />
                         </div>
                         <Input className={'d-flex flex-column meal-new-square meal-new-square-input'} type='number' disabled value={this.state.product.nutrition.weight}/>
                     </div>
 
                     <div className={'d-flex flex-row'}>
-                        <div addonType="prepend" className={'d-flex align-items-center justify-content-center flex-column meal-new-square'}>
+                        <div className={'d-flex align-items-center justify-content-center flex-column meal-new-square'}>
                             <img src={'/icons/calorie.svg'} alt={'calorie'} />
                         </div>
                         <Input className={'d-flex flex-column meal-new-square meal-new-square-input'} type='text' onChange={this.setCalories.bind(this)} value={this.state.product.nutrition.calories}/>
