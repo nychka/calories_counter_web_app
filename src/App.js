@@ -6,55 +6,12 @@ import './App.css';
 import './ReactSelect.css';
 import './Calendar.css';
 import { ProductsContext, ProductsProvider } from './components/products/ProductsProvider';
-import FacebookLogin from 'react-facebook-login';
-import GoogleLogin from 'react-google-login'
 import MealsNew from './components/meals/MealsNew';
 import MealsShow from './components/meals/MealsShow';
 import ProductNew from './components/products/ProductNew';
-import {axio, defaultHeaders} from './utils';
+import Login from './components/Login';
 
 class App extends React.Component {
-
-    failGoogle(response){
-        console.log(response);
-    }
-
-    responseGoogle(response){
-        console.log(response);
-        this.signIn(response.accessToken, 'google');
-    }
-    responseFacebook(response){
-        console.log(response);
-        this.signIn(response.accessToken, 'facebook');
-    }
-
-
-    componentClicked(e){
-        console.log(e);
-    }
-    signIn(accessToken, provider){
-
-        axio({
-            method: 'post',
-            url: '/users/sign_in',
-            data: { access_token: accessToken, provider: provider },
-            headers: defaultHeaders()
-        })
-        .then(function (response) {
-            console.log(response);
-            if(response.status === 201) {
-                alert(response.data.email + ' logged in!');
-                //saveCurrentUser(response.data, response.headers.authorization);
-                //history.push({pathname: '/'});
-            }else{
-                //self.setState({ hasError: true, errorMessage: response.data.error })
-            }
-        })
-        .catch(function (response) {
-            console.log(response);
-
-        });
-    }
   render() {
     return (
       <div className="App">
@@ -84,27 +41,7 @@ class App extends React.Component {
                     )} />
                 
                     <Route path='/login' exact render={() => (
-                                <ProductsContext.Consumer>
-                                    { props => (
-                                        <div>
-                                           <FacebookLogin
-                                               appId="1816374385077661"
-                                               autoLoad={false}
-                                               fields="name,email,picture"
-                                               onClick={this.componentClicked.bind(this)}
-                                               callback={this.responseFacebook.bind(this)}
-                                           />
-
-                                            <GoogleLogin
-                                                clientId="930732790033-lirk2bn8esigr142rucgm86gqsifeum7.apps.googleusercontent.com"
-                                                buttonText="Login"
-                                                autoLoad={false}
-                                                onSuccess={this.responseGoogle.bind(this)}
-                                                onFailure={this.failGoogle.bind(this)}
-                                            />
-                                        </div>
-                                    )}
-                                </ProductsContext.Consumer>
+                               <Login />
                     )} />
 
                     <Route path='/' exact render={() => (

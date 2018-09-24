@@ -29,7 +29,9 @@ class Header extends React.Component
                         <div onClick={this.pickToday.bind(this)} className='brand d-flex justify-content-left'>{ this.siteName }</div>
                     </Link>
                     <div className={'d-flex justify-content-center brand'}>{this.props.consumedCalories} / {this.props.caloriesLimit}</div>
-                    <div className={'d-flex justify-content-right'}>Sign in</div>
+                    <div className={'d-flex justify-content-right'}>
+                        <Link to={'/login'}>Sign in</Link>
+                    </div>
                 </Navbar>
                 <Line percent={progress} className={'rounded'} strokeWidth="0.4" strokeColor={ this.props.isPresentMoment() ? '#42d8d8' : '#267979' } />
             </div>
