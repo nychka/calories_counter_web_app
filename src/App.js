@@ -10,6 +10,7 @@ import MealsNew from './components/meals/MealsNew';
 import MealsShow from './components/meals/MealsShow';
 import ProductNew from './components/products/ProductNew';
 import Login from './components/Login';
+import Logout from './components/Logout';
 
 class App extends React.Component {
   render() {
@@ -42,6 +43,10 @@ class App extends React.Component {
                 
                     <Route path='/login' exact render={() => (
                                <Login />
+                    )} />
+
+                    <Route path='/logout' exact render={() => (
+                               <Logout />
                     )} />
 
                     <Route path='/' exact render={() => (

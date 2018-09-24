@@ -1,7 +1,7 @@
 import React from 'react';
 import FacebookLogin from'react-facebook-login/dist/facebook-login-render-props';
 import GoogleLogin from 'react-google-login'
-import {axio, defaultHeaders} from '../utils';
+import {axio, defaultHeaders, saveCurrentUser, history} from '../utils';
 import './Login.css';
 
 class Login extends React.Component{
@@ -27,17 +27,16 @@ class Login extends React.Component{
         axio({
             method: 'post',
             url: '/users/sign_in',
-            data: { access_token: accessToken, provider: provider },
+            data: { token: accessToken, provider: provider, grant_type: 'access_token' },
             headers: defaultHeaders()
         })
         .then(function (response) {
             console.log(response);
             if(response.status === 201) {
-                alert(response.data.email + ' logged in!');
-                //saveCurrentUser(response.data, response.headers.authorization);
-                //history.push({pathname: '/'});
+                saveCurrentUser(response.data, response.headers.authorization);
+                history.push({pathname: '/'});
             }else{
-                //self.setState({ hasError: true, errorMessage: response.data.error })
+                console.error(response);
             }
         })
         .catch(function (response) {
@@ -68,10 +67,6 @@ class Login extends React.Component{
                     />
                     <GoogleLogin
                         clientId="930732790033-lirk2bn8esigr142rucgm86gqsifeum7.apps.googleusercontent.com"
-                        //tag={'div'}
-                        //type={'div'}
-                        //className={'d-flex flex-row login-button'}
-                        //style={{}}
                         autoLoad={false}
                         onSuccess={this.responseGoogle.bind(this)}
                         onFailure={this.failGoogle.bind(this)}
