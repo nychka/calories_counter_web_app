@@ -1,5 +1,5 @@
 import React from 'react';
-import FacebookLogin from 'react-facebook-login';
+import FacebookLogin from'react-facebook-login/dist/facebook-login-render-props';
 import GoogleLogin from 'react-google-login'
 import {axio, defaultHeaders} from '../utils';
 import './Login.css';
@@ -48,31 +48,40 @@ class Login extends React.Component{
 
     render(){
         return(
-            <div className={'d-flex Login flex-column aling-items-center justify-content-center'}>
-                <div className={'d-flex flex-row'}>
+            <div className={'d-flex Login flex-column align-items-center'}>
+                <div className={'d-flex flex-row login-title'}>
                     <h3>Sign in</h3>
                 </div>
+                <div className={'d-flex flex-column justify-content-center'}>
                     <FacebookLogin
                         appId="1816374385077661"
                         autoLoad={false}
                         fields="name,email,picture"
                         onClick={this.componentClicked.bind(this)}
                         callback={this.responseFacebook.bind(this)}
-                        tag={'div'}
-                        type={'div'}
                         style={{}}
-                        cssClass={'d-flex flex-row login-button'}
+                        render={renderProps => (
+                            <div onClick={renderProps.onClick} className={'d-flex flex-column align-items-center login-button'}>
+                                <img className={'facebook-button'} src={'/images/facebook-login.png'} alt="Login with Facebook" />
+                            </div>
+                        )}
                     />
                     <GoogleLogin
                         clientId="930732790033-lirk2bn8esigr142rucgm86gqsifeum7.apps.googleusercontent.com"
-                        tag={'div'}
-                        type={'div'}
-                        className={'d-flex flex-row login-button'}
-                        style={{}}
+                        //tag={'div'}
+                        //type={'div'}
+                        //className={'d-flex flex-row login-button'}
+                        //style={{}}
                         autoLoad={false}
                         onSuccess={this.responseGoogle.bind(this)}
                         onFailure={this.failGoogle.bind(this)}
+                        render={renderProps => (
+                            <div onClick={renderProps.onClick} className={'d-flex flex-column align-items-center login-button'}>
+                                <img className={'google-button'} src={'/images/google-login.png'} alt="Login with Google" />
+                            </div>
+                        )}
                     />
+                </div>
             </div>
         );
     }

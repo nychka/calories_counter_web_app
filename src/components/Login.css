@@ -1,7 +1,37 @@
 .Login {
     width: 50%;
-    border: 1px solid #ccc;
-    background-color: #cccccc;
-    height: 20rem;
+    /* border: 1px solid #ccc; */
+    background-color: #dcdcdc;
     margin: auto;
+    padding: 3rem;
+}
+
+.Login .login-button {
+    width: 100%;
+    /* height: 5rem; */
+    /* border: 1px solid #ccc; */
+    margin-top: 2rem;
+}
+
+.Login .login-button img:hover {
+    cursor: pointer;
+    box-shadow: 4px 8px 25px #ffffff;
+}
+
+.Login .login-title > h3 {
+    margin-bottom: 2rem;
+    font-family: Pacifico;
+    font-size: 3rem;
+    font-weight: 300;
+    font-style: normal;
+}
+
+.Login .facebook-button {
+    width: 50%;
+    height: 50%;
+}
+
+.Login .google-button {
+    width: 50%;
+    height: 50%;
 }
