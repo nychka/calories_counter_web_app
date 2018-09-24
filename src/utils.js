@@ -20,6 +20,29 @@ export const defaultHeaders = () => {
     }
 };
 
+export const signIn = (accessToken, provider) => {
+
+    axio({
+        method: 'post',
+        url: '/users/sign_in',
+        data: { token: accessToken, provider: provider, grant_type: 'access_token' },
+        headers: defaultHeaders()
+    })
+    .then(function (response) {
+        console.log(response);
+        if(response.status === 201) {
+            saveCurrentUser(response.data, response.headers.authorization);
+            history.push({pathname: '/'});
+        }else{
+            console.error(response);
+        }
+    })
+    .catch(function (response) {
+        console.log(response);
+
+    });
+}
+
 export const signOut = () => {
     localStorage.removeItem('currentUser');
     localStorage.removeItem('accessToken');

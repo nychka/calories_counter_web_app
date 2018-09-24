@@ -11,6 +11,7 @@ import MealsShow from './components/meals/MealsShow';
 import ProductNew from './components/products/ProductNew';
 import Login from './components/Login';
 import Logout from './components/Logout';
+import Profile from './components/Profile';
 
 class App extends React.Component {
   render() {
@@ -41,13 +42,11 @@ class App extends React.Component {
                         </ProductsContext.Consumer>
                     )} />
                 
-                    <Route path='/login' exact render={() => (
-                               <Login />
-                    )} />
+                    <Route path='/login' exact render={() => <Login />} />
 
-                    <Route path='/logout' exact render={() => (
-                               <Logout />
-                    )} />
+                    <Route path='/logout' exact render={() => <Logout />} />
+
+                    <Route path='/me' exact render={() => <Profile />} />
 
                     <Route path='/' exact render={() => (
                         <ProductsContext.Consumer>

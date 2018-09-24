@@ -35,7 +35,7 @@ class Header extends React.Component
                     <div className={'d-flex justify-content-center brand'}>{this.props.consumedCalories} / {this.props.caloriesLimit}</div>
                     <div className={'d-flex justify-content-right justify-content-center align-items-center profile-button'}>
                         { userSignedIn()
-                        ?    <Link to={'/me'}><img src={currentUser().avatar} alt='profile' /></Link>
+                        ?    <Link to={'/me'}><img src={currentUser().avatar} alt='profile' width="50px" height="50px" /></Link>
                         :   <Link to={'/login'}><GoSignIn /></Link>
                         }
                     </div>
