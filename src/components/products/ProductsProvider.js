@@ -8,8 +8,8 @@ export const ProductsContext = React.createContext({});
 export class ProductsProvider extends React.Component{
     constructor(props){
         super(props);
-        const meals = this.getItem('meals');
-        const products = this.getItem('products');
+        // const meals = this.getItem('meals');
+        // const products = this.getItem('products');
         const searchPlaceholder = <span>Type product title here...</span>;
         const todayMoment = toMomentObject(new Date());
 
@@ -17,13 +17,13 @@ export class ProductsProvider extends React.Component{
             lang: 'en',
             searchIndexes: [['lang', 'ua'], ['lang', 'ru'], ['lang', 'en']],
             caloriesLimit: 2000,
-            products: products,
+            consumedCalories: 0,
+            products: [],//products,
+            meals: [],//meals,
             productsOptions: [],
             filterOptions: [],
             todayMoment: todayMoment,
             moment: todayMoment,
-            meals: meals,
-            consumedCalories: 0,
             selectedProduct: {value: '', label: searchPlaceholder},
             fetch: this.fetch.bind(this),
             addCalories: this.addCalories.bind(this),
@@ -68,7 +68,7 @@ export class ProductsProvider extends React.Component{
 
         this.setState((prevState) => {
             const meals = prevState.meals.filter(item => item.consumedAt !== id); 
-            this.saveItem('meals', meals);
+            //this.saveItem('meals', meals);
 
             return { meals: meals };
         }, () => {
@@ -111,7 +111,7 @@ export class ProductsProvider extends React.Component{
             const meals = Object.assign([], prevState.meals);
             product.consumedAt = new Date().getTime();
             meals.push(product);
-            this.saveItem('meals', meals);
+            //this.saveItem('meals', meals);
 
             return { meals: meals }
         }, () => {
@@ -213,7 +213,7 @@ export class ProductsProvider extends React.Component{
             .then(function (response) {
                 console.log(response);
                 self.setState({products: response.data.products});
-                self.saveItem('products',response.data.products);
+                //self.saveItem('products',response.data.products);
                 self.buildProductsOptions();
                 console.info('GET products from API');
 
