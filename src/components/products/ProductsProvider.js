@@ -8,7 +8,7 @@ export const ProductsContext = React.createContext({});
 export class ProductsProvider extends React.Component{
     constructor(props){
         super(props);
-        const consumedProducts = this.getItem('consumedProducts');
+        const meals = this.getItem('meals');
         const products = this.getItem('products');
         const searchPlaceholder = <span>Type product title here...</span>;
         const todayMoment = toMomentObject(new Date());
@@ -16,17 +16,13 @@ export class ProductsProvider extends React.Component{
         this.state = {
             lang: 'en',
             searchIndexes: [['lang', 'ua'], ['lang', 'ru'], ['lang', 'en']],
-            currentPage: 1,
-            totalPages: 0,
-            currentAmount: 0,
-            totalAmount: 100,
             caloriesLimit: 2000,
             products: products,
             productsOptions: [],
             filterOptions: [],
             todayMoment: todayMoment,
             moment: todayMoment,
-            consumedProducts: consumedProducts,
+            meals: meals,
             consumedCalories: 0,
             selectedProduct: {value: '', label: searchPlaceholder},
             fetch: this.fetch.bind(this),
@@ -50,14 +46,14 @@ export class ProductsProvider extends React.Component{
 
     isPresentMoment = () => isRightMoment(toMomentObject(new Date()), this.state.moment);
 
-    consumedProductsByDate = (date) => (
-        this.state.consumedProducts.filter(product => {
+    mealsByDate = (date) => (
+        this.state.meals.filter(product => {
             return isRightMoment(toMomentObject(new Date(product.consumedAt)), date)
         })
     )
 
     setConsumedCaloriesByDate = (date) => {
-        const products = this.consumedProductsByDate(date);
+        const products = this.mealsByDate(date);
         const calories = this.countConsumedCalories(products);
         this.setState({consumedCalories: calories});
     }
@@ -71,10 +67,10 @@ export class ProductsProvider extends React.Component{
         const id = parseInt(product.target.parentElement.getAttribute('data-id'), 10);
 
         this.setState((prevState) => {
-            const consumedProducts = prevState.consumedProducts.filter(item => item.consumedAt !== id); 
-            this.saveItem('consumedProducts', consumedProducts);
+            const meals = prevState.meals.filter(item => item.consumedAt !== id); 
+            this.saveItem('meals', meals);
 
-            return { consumedProducts: consumedProducts };
+            return { meals: meals };
         }, () => {
             this.setConsumedCaloriesByDate(this.state.moment);
         });
@@ -96,9 +92,9 @@ export class ProductsProvider extends React.Component{
         }
     }
 
-    countConsumedCalories = (consumedProducts) => {
+    countConsumedCalories = (meals) => {
         let consumedCalories = 0;
-        consumedProducts.map(product => (consumedCalories += parseInt(product.nutrition.calories, 10)));
+        meals.map(product => (consumedCalories += parseInt(product.nutrition.calories, 10)));
         return consumedCalories;
     }
 
@@ -112,12 +108,12 @@ export class ProductsProvider extends React.Component{
 
     addCalories(product){
         this.setState((prevState) => {
-            const consumedProducts = Object.assign([], prevState.consumedProducts);
+            const meals = Object.assign([], prevState.meals);
             product.consumedAt = new Date().getTime();
-            consumedProducts.push(product);
-            this.saveItem('consumedProducts', consumedProducts);
+            meals.push(product);
+            this.saveItem('meals', meals);
 
-            return { consumedProducts: consumedProducts }
+            return { meals: meals }
         }, () => {
             this.setConsumedCaloriesByDate(this.state.moment);
         });
@@ -144,11 +140,11 @@ export class ProductsProvider extends React.Component{
     }
 
     findMealByValue(value){
-        return this.state.consumedProducts.find(product => product.lang.en === value);
+        return this.state.meals.find(product => product.lang.en === value);
     }
 
     findMealBy(key, value){
-        return this.state.consumedProducts.find(product => product[key] === value);
+        return this.state.meals.find(product => product[key] === value);
     }
 
     buildProductOption = (product, action = 'select-option') => {

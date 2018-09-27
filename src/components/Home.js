@@ -20,7 +20,7 @@ class Home extends React.Component
     }
 
     componentDidMount(){
-        this.consumedDays = this.props.consumedProducts.map(product => toMomentObject(new Date(product.consumedAt)));
+        this.consumedDays = this.props.meals.map(product => toMomentObject(new Date(product.consumedAt)));
         this.consumedDays.push(toMomentObject(new Date()));
     }
 
@@ -34,7 +34,7 @@ class Home extends React.Component
 
     render(){
         const self = this;
-        const consumedProducts = this.props.consumedProducts.filter(product => {
+        const meals = this.props.meals.filter(product => {
             const moment = toMomentObject(new Date(product.consumedAt));
             return self.isRightMoment(moment);
         });
@@ -75,8 +75,8 @@ class Home extends React.Component
                 </div>
                 <div className={'d-flex flex-wrap align-items-end mt-3 consumed-products-wrapper'}>
                 {
-                    consumedProducts.length ?
-                    consumedProducts.map(product => (
+                    meals.length ?
+                    meals.map(product => (
                         <Router history={history} key={product.consumedAt}>
                             <ProductCard 
                                 key={product.consumedAt}

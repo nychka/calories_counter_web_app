@@ -18,8 +18,8 @@ describe('<Home />', () => {
         lang: { en: 'title'},
         nutrition: {calories: 100, weight: 100}
     };
-    const noConsumedProductsTitleSelector = 'h3';
-    const consumedProductsWrapper = 'div.consumed-products-wrapper';
+    const noMealsTitleSelector = 'h3';
+    const mealsWrapper = 'div.consumed-products-wrapper';
     const selectProductsSelector = '#select-products';
     const removeSelector = '.product-card-remove';
 
@@ -32,11 +32,11 @@ describe('<Home />', () => {
     const todayMoment = () => toMomentObject(new Date());
 
     const subject = (options = {}) => {
-        const defaults = { products: [], consumed: [], moment: todayMoment() };
+        const defaults = { products: [], meals: [], moment: todayMoment() };
         const settings = Object.assign(defaults, options);
 
         ProductsProvider.prototype.getMoment = jest.fn(() => settings.moment);
-        window.localStorage.setItem('consumedProducts', JSON.stringify(settings.consumed));
+        window.localStorage.setItem('meals', JSON.stringify(settings.meals));
         window.localStorage.setItem('products', JSON.stringify(settings.products));
 
         return mount(
@@ -48,7 +48,7 @@ describe('<Home />', () => {
         );
     };
 
-    const buildConsumedProducts = (count, consumedAt = new Date()) => {
+    const buildMeals = (count, consumedAt = new Date()) => {
         let products = [];
         const time = consumedAt.getTime();
 
@@ -67,43 +67,43 @@ describe('<Home />', () => {
         expect(wrapper.exists(selectProductsSelector)).toBeTruthy();
     });
 
-    it('shows message: no consumed products', () => {
-        const wrapper = subject().find(consumedProductsWrapper);
+    it('shows message: no meals', () => {
+        const wrapper = subject().find(mealsWrapper);
 
-        expect(wrapper.exists(noConsumedProductsTitleSelector)).toBeTruthy();
+        expect(wrapper.exists(noMealsTitleSelector)).toBeTruthy();
     });
 
-    it('shows 2 consumed products', () => {
-        const wrapper = subject({ consumed: buildConsumedProducts(2) });
+    it('shows 2 meals', () => {
+        const wrapper = subject({ meals: buildMeals(2) });
 
-        expect(wrapper.find(consumedProductsWrapper).children()).toHaveLength(2);
+        expect(wrapper.find(mealsWrapper).children()).toHaveLength(2);
     });
 
-    it('shows products consumed today', () => {
+    it('shows meals consumed today', () => {
         const today = new Date();
         const yesterday = daysAgo(1);
-        const consumedToday = buildConsumedProducts(3, today);
-        const consumedYesterday = buildConsumedProducts(2, yesterday);
-        const consumedProducts = [...consumedToday, ...consumedYesterday];
-        const wrapper = subject({ moment: toMomentObject(today), consumed: consumedProducts});
+        const consumedToday = buildMeals(3, today);
+        const consumedYesterday = buildMeals(2, yesterday);
+        const meals = [...consumedToday, ...consumedYesterday];
+        const wrapper = subject({ moment: toMomentObject(today), meals: meals});
 
-        expect(wrapper.find(consumedProductsWrapper).children()).toHaveLength(3);
+        expect(wrapper.find(mealsWrapper).children()).toHaveLength(3);
     });
 
-    it('shows products consumed yesterday', () => {
-        const today = new Date();
+    it('shows meals consumed yesterday', () => {
         const yesterday = daysAgo(1);
-        const consumedToday = buildConsumedProducts(3, today);
-        const consumedYesterday = buildConsumedProducts(4, yesterday);
-        const consumedProducts = [...consumedToday, ...consumedYesterday];
-        const wrapper = subject({ moment: toMomentObject(yesterday), consumed: consumedProducts});
+        const consumedToday = buildMeals(2, new Date());
+        const consumedYesterday = buildMeals(5, yesterday);
+        const meals = [...consumedToday, ...consumedYesterday];
+        const wrapper = subject({ meals: meals });
+        wrapper.setState({ moment: toMomentObject(yesterday) });
 
-        expect(wrapper.find(consumedProductsWrapper).children()).toHaveLength(4);
+        expect(wrapper.find(mealsWrapper).children()).toHaveLength(5);
     });
 
-    it('removes consumed product', () => {
-        const wrapper = subject({ consumed: buildConsumedProducts(3) });
-        const container = wrapper.find(consumedProductsWrapper);
+    it('removes meal', () => {
+        const wrapper = subject({ meals: buildMeals(3) });
+        const container = wrapper.find(mealsWrapper);
         
         expect(container.children()).toHaveLength(3);
         
@@ -111,6 +111,6 @@ describe('<Home />', () => {
         container.childAt(1).find(removeSelector).simulate('click');
         wrapper.update();
        
-        expect(wrapper.find(consumedProductsWrapper).children()).toHaveLength(1);
+        expect(wrapper.find(mealsWrapper).children()).toHaveLength(1);
     });
 });
