@@ -187,3 +187,11 @@
 #date-picker:hover{
   cursor: pointer;
 }
+
+.spinner {
+  margin: 0 auto;
+}
+
+.spinner img{
+  height: inherit;
+}

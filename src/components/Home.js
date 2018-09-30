@@ -55,6 +55,7 @@ class Home extends React.Component
                     optionHeight={64}
                     maxHeight={500}
                     clearable={false}
+                    disabled={this.props.isLoading}
                    />
                 </div> }
                 <div id={'select-date'} className={'d-flex mt-3 md-3'}>

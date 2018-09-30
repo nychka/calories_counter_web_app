@@ -11,6 +11,7 @@ class Header extends React.Component
         super(props);
 
         this.siteName = 'Calories Counter';
+        this.spinnerPath = '/spinners/bars.gif';
         this.state = {
             isOpen: false,
             progressPercent: 0
@@ -29,9 +30,14 @@ class Header extends React.Component
         return(
             <div className={'mb-3 header'}>
                 <Navbar className="">
-                    <Link to="/">
-                        <div onClick={this.pickToday.bind(this)} className='brand d-flex justify-content-left'>{ this.siteName }</div>
-                    </Link>
+                    <div className={'d-flex align-items-center'}>
+                        <Link to="/">
+                            <div onClick={this.pickToday.bind(this)} className='brand d-flex justify-content-left'>{ this.siteName }</div>
+                        </Link>
+                        {this.props.isLoading && <div className={'d-flex spinner ml-2'}>
+                            <img className={'d-flex align-self-left'} src={this.spinnerPath} />
+                        </div>}
+                    </div>
                     <div className={'d-flex justify-content-center brand'}>{this.props.consumedCalories} / {this.props.caloriesLimit}</div>
                     <div className={'d-flex justify-content-right justify-content-center align-items-center profile-button'}>
                         { userSignedIn()

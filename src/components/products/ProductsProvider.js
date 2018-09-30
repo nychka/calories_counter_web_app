@@ -10,11 +10,11 @@ export class ProductsProvider extends React.Component{
         super(props);
         // const meals = this.getItem('meals');
         // const products = this.getItem('products');
-        const searchPlaceholder = <span>Type product title here...</span>;
         const todayMoment = toMomentObject(new Date());
 
         this.state = {
             lang: 'en',
+            selectedProductText: 'Type or select product',
             searchIndexes: [['lang', 'ua'], ['lang', 'ru'], ['lang', 'en']],
             caloriesLimit: 2000,
             consumedCalories: 0,
@@ -24,7 +24,8 @@ export class ProductsProvider extends React.Component{
             filterOptions: [],
             todayMoment: todayMoment,
             moment: todayMoment,
-            selectedProduct: {value: '', label: searchPlaceholder},
+            isLoading: false,
+            selectedProduct: {value: '', label: ''},
             fetch: this.fetch.bind(this),
             addCalories: this.addCalories.bind(this),
             findProductByValue: this.findProductByValue.bind(this),
@@ -39,7 +40,24 @@ export class ProductsProvider extends React.Component{
         }
     }
 
+    setSelectedProduct = (text) => {
+        const product = { value: '', label: <span>{text}</span> };
+
+        this.setState({ selectedProduct: product });
+    }
+
+    startLoading = () => {
+        this.setState({isLoading: true });
+        this.setState({selectedProduct: this.buildProductOption({lang: {en: 'Please wait - Products are loading'}}, 'default-option')});
+    }
+
+    finishLoading = () => {
+        this.setState({isLoading: false });
+        this.setState({selectedProduct: this.buildProductOption( { lang: {en: this.state.selectedProductText} }, 'default-option')});
+    }
+
     componentDidMount(){
+        this.setSelectedProduct(this.state.selectedProductText);
         this.fetch();
         this.pickMoment(this.state.moment);
     }
@@ -149,7 +167,7 @@ export class ProductsProvider extends React.Component{
 
     buildProductOption = (product, action = 'select-option') => {
         const label = <span>
-                <img width={'48px'} height={'48px'} src={product.image} alt='product-option' />
+                {product.image && <img width={'48px'} height={'48px'} src={product.image} alt='product-option' />}
                 {product.lang[this.state.lang]}
         </span>;
         return { value: product.lang[this.state.lang], label: label, lang: product.lang, action: action };
@@ -205,6 +223,7 @@ export class ProductsProvider extends React.Component{
             if(!this.state.productsOptions.length) self.buildProductsOptions();
             return Promise.resolve(this.state.products);
         }else{
+            this.startLoading();
             return axio({
                 method: 'get',
                 url: '/products',
@@ -216,6 +235,7 @@ export class ProductsProvider extends React.Component{
                 //self.saveItem('products',response.data.products);
                 self.buildProductsOptions();
                 console.info('GET products from API');
+                self.finishLoading();
 
                 return response.data.products;
             })
