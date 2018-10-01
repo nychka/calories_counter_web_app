@@ -2,6 +2,8 @@ import React from "react";
 import {axio, defaultHeaders, history, isRightMoment} from "../../utils";
 import { toMomentObject } from 'react-dates';
 import createFilterOptions from 'react-select-fast-filter-options'
+import Product from '../../lib/Product';
+import Meal from '../../lib/Meal';
 
 export const ProductsContext = React.createContext({});
 
@@ -130,6 +132,13 @@ export class ProductsProvider extends React.Component{
             product.consumedAt = new Date().getTime();
             meals.push(product);
             //this.saveItem('meals', meals);
+            console.log(product);
+            const meal = { 
+                product_id: product.id, 
+                weight: product.nutrition.weight,
+                created_at: product.consumedAt
+            }
+            Meal.create(meal);
 
             return { meals: meals }
         }, () => {
@@ -145,6 +154,8 @@ export class ProductsProvider extends React.Component{
         options.push(option);
         products.push(product);
         const filterOptions = createFilterOptions({ options });
+
+        Product.create(product);
 
         this.setState({
             productsOptions: options,
@@ -224,28 +235,36 @@ export class ProductsProvider extends React.Component{
             return Promise.resolve(this.state.products);
         }else{
             this.startLoading();
-            return axio({
-                method: 'get',
-                url: '/products',
-                headers: defaultHeaders()
-            })
-            .then(function (response) {
-                console.log(response);
-                self.setState({products: response.data.products});
-                //self.saveItem('products',response.data.products);
+            Product.all()
+            .then(products => {
+                console.log(products);
+                self.setState({products: products});
                 self.buildProductsOptions();
                 console.info('GET products from API');
                 self.finishLoading();
-
-                return response.data.products;
             })
-            .catch(function (response) {
-                console.log(response);
-                history.push({
-                    pathname: '/logout',
-                    state: { error: '401' }
-                });
-            });
+            // return axio({
+            //     method: 'get',
+            //     url: '/products',
+            //     headers: defaultHeaders()
+            // })
+            // .then(function (response) {
+            //     console.log(response);
+            //     self.setState({products: response.data.products});
+            //     //self.saveItem('products',response.data.products);
+            //     self.buildProductsOptions();
+            //     console.info('GET products from API');
+            //     self.finishLoading();
+
+            //     return response.data.products;
+            // })
+            // .catch(function (response) {
+            //     console.log(response);
+            //     history.push({
+            //         pathname: '/logout',
+            //         state: { error: '401' }
+            //     });
+            // });
         }
     }
 
