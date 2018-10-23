@@ -8,7 +8,7 @@ class Meal{
             headers: defaultHeaders()
         })
         .then(function (response) {
-            return Promise.resolve(response.data.products);
+            return Promise.resolve(response.data.meals);
         })
         .catch(function (response) {
             console.log(response);
@@ -23,7 +23,30 @@ class Meal{
             headers: defaultHeaders()
         })
         .then(function (response) {
-            return Promise.resolve(response.data.products);
+            return Promise.resolve(response.data.meals);
+        })
+        .catch(function (response) {
+            console.log(response);
+        });
+    }
+
+    static delete = (...meals) => {
+        let ids = [];
+        meals.filter(meal => {
+            if(meal.hasOwnProperty('server_id')){
+                ids.push(meal.server_id);
+            }
+        });
+        if(ids.length < 1) return false;
+
+        return axio({
+            method: 'delete',
+            url: '/meals',
+            data: { ids: ids },
+            headers: defaultHeaders()
+        })
+        .then(function (response) {
+            return Promise.resolve(response);
         })
         .catch(function (response) {
             console.log(response);

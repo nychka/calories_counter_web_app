@@ -27,6 +27,7 @@ class MealsNew extends React.Component{
         const calories = parseInt(product.nutrition.calories, 10);
 
         if(weight && calories){
+            product.nutrition.weight = weight;
             this.props.addCalories(product);
         }else{
             alert('Please set correct weight in grams');

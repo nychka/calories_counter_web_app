@@ -20,8 +20,8 @@ export class ProductsProvider extends React.Component{
             searchIndexes: [['lang', 'ua'], ['lang', 'ru'], ['lang', 'en']],
             caloriesLimit: 2000,
             consumedCalories: 0,
-            products: [],//products,
-            meals: [],//meals,
+            products: [],
+            meals: [],
             productsOptions: [],
             filterOptions: [],
             todayMoment: todayMoment,
@@ -85,6 +85,9 @@ export class ProductsProvider extends React.Component{
 
     removeHandler = (product) => {
         const id = parseInt(product.target.parentElement.getAttribute('data-id'), 10);
+
+        const meal = this.findMealBy('consumedAt', id);
+        Meal.delete(meal);
 
         this.setState((prevState) => {
             const meals = prevState.meals.filter(item => item.consumedAt !== id); 
@@ -168,6 +171,10 @@ export class ProductsProvider extends React.Component{
         return this.state.products.find(product => product.lang.en === value);
     }
 
+    findProductById(id){
+        return this.state.products.find(product => product.id === id);
+    }
+
     findMealByValue(value){
         return this.state.meals.find(product => product.lang.en === value);
     }
@@ -238,34 +245,32 @@ export class ProductsProvider extends React.Component{
             Product.all()
             .then(products => {
                 console.log(products);
-                self.setState({products: products});
+                self.setState({products: products}, self.fetchMeals)
                 self.buildProductsOptions();
                 console.info('GET products from API');
                 self.finishLoading();
-            })
-            // return axio({
-            //     method: 'get',
-            //     url: '/products',
-            //     headers: defaultHeaders()
-            // })
-            // .then(function (response) {
-            //     console.log(response);
-            //     self.setState({products: response.data.products});
-            //     //self.saveItem('products',response.data.products);
-            //     self.buildProductsOptions();
-            //     console.info('GET products from API');
-            //     self.finishLoading();
-
-            //     return response.data.products;
-            // })
-            // .catch(function (response) {
-            //     console.log(response);
-            //     history.push({
-            //         pathname: '/logout',
-            //         state: { error: '401' }
-            //     });
-            // });
+            });
         }
+    }
+
+    fetchMeals = () => {
+        const self = this;
+        Meal.all()
+        .then(meals => {
+            console.log(meals);
+            let transformedMeals = meals.map(meal => {
+                const product = Object.assign({}, self.findProductById(meal.product_id));
+                const ratio = (product.nutrition.calories / 100);
+                product.server_id = meal.id;
+                product.nutrition.weight = parseInt(meal.weight, 10);
+                product.nutrition.calories =  Math.round(product.nutrition.weight * ratio);
+                product.consumedAt = meal.created_at;
+                return product;
+            });
+            this.setState({meals: transformedMeals}, () => {
+                this.setConsumedCaloriesByDate(this.state.moment);
+            });
+        });
     }
 
     render(){

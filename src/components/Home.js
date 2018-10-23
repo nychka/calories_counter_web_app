@@ -13,19 +13,30 @@ class Home extends React.Component
     constructor(props){
         super(props);
         this.state = {
-            focused: false
+            focused: false,
+            consumedDays: []
         }
         this.todayMoment = toMomentObject(new Date());
         this.isRightMoment = (moment) => isRightMoment(moment, this.props.moment);
     }
 
     componentDidMount(){
-        this.consumedDays = this.props.meals.map(product => toMomentObject(new Date(product.consumedAt)));
-        this.consumedDays.push(toMomentObject(new Date()));
+        let consumedDays = this.props.meals.map(product => toMomentObject(new Date(product.consumedAt)));
+        consumedDays.push(toMomentObject(new Date()));
+
+        this.setState({consumedDays: consumedDays});
+    }
+
+    componentDidUpdate(prevProps, prevState){
+        if(this.props.meals.length && prevState.consumedDays.length === 1){
+            let consumedDays = this.props.meals.map(product => toMomentObject(new Date(product.consumedAt)));
+            consumedDays.push(toMomentObject(new Date()));
+            this.setState({consumedDays: consumedDays});
+        }
     }
 
     isOutsideRange = (day) => {
-        return !this.consumedDays.some(consumedDay => isRightMoment(consumedDay, day));
+        return !this.state.consumedDays.some(consumedDay => isRightMoment(consumedDay, day));
     }
 
     isDayHighlighted = (day) => {
