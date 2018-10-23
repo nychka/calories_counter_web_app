@@ -8,7 +8,8 @@ class Meal{
             headers: defaultHeaders()
         })
         .then(function (response) {
-            return Promise.resolve(response.data.meals);
+            const meals = response.data.meals ? response.data.meals : [];
+            return Promise.resolve(meals);
         })
         .catch(function (response) {
             console.log(response);
